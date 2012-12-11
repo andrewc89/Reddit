@@ -15,10 +15,11 @@ namespace Reddit
     {
         #region Constructor
 
-        public Reddit () 
+        public Reddit (string UserAgent) 
         {
             this.Me = new Me();
             this.Connection = new HttpWrapper(this.Me);
+            this.Connection.UserAgent = UserAgent;
         }
 
         #endregion
@@ -51,25 +52,25 @@ namespace Reddit
 
         #endregion        
 
-        #region GetJSON
+        #region Get
 
         public string GetJSON (string Url)
         {
             return this.Connection.Get(Url);
         }
 
-        public void GetJSON (Thing Thing, bool Comments = false)
-        {            
-            string Url;
+        public string GetThing (Thing Thing, bool Comments = false)
+        {
+            string Response;
             if (Comments)
             {
-                Url = "http://www.reddit.com/comments/" + Thing.ToString() + ".json";
+                Response = GetJSON("http://www.reddit.com/comments/" + Thing.ToString() + ".json");
             }
             else
             {
-                Url = "http://www.reddit.com/by_id/" + Thing.ToString() + ".json";
+                Response = GetJSON("http://www.reddit.com/by_id/" + Thing.ToString() + ".json");
             }
-            GetJSON(Url);
+            return Response;
         }
 
         #endregion
@@ -88,36 +89,80 @@ namespace Reddit
 
         #region Subreddit
 
-        public void GetSubreddit (string Subreddit)
+        public Subreddit GetSubreddit (string SubredditName)
         {
-            var Response = GetJSON("http://www.reddit.com/r/" + Subreddit + "/.json");            
+            string Response = GetJSON("http://www.reddit.com/r/" + SubredditName + "/.json");
+            return Subreddit.Create(Response);
         }
 
         #endregion
 
         #region Comment
 
-        public void PostComment (string id, Kind kind, string CommentMarkdown)
+        public Comment GetComment (Thing Thing)
+        {
+            string Response = GetThing(Thing);
+            return Comment.Create(Response);
+        }
+
+        public Thing PostComment (string id, Kind kind, string CommentMarkdown)
+        {
+            return this.PostComment(Thing.Get(kind.ToString() + "_" + id.ToString()), CommentMarkdown);          
+        }
+
+        public Thing PostComment (Thing thing, string CommentMarkdown)
         {
             if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to post a comment");
             string PostData = new StringBuilder()
-                .Append("thing_id=").Append(id)
+                .Append("thing_id=").Append(thing.ToString())
                 .Append("&text=").Append(CommentMarkdown)
-                //.Append("&uh=").Append(this.Me.ModHash)
                 .ToString();
-            var Response = this.Connection.Post("http://www.reddit.com/api/comment", PostData);
+            string Response = this.Connection.Post("http://www.reddit.com/api/comment", PostData);
+            return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
         }
-
-        public void PostComment (Thing thing, string Comment)
-        {
-            this.PostComment(thing.ID, thing.Kind, Comment);
-        }        
 
         #endregion
 
         #region Link
 
-        public Thing PostLink (string Title, string Url, string Subreddit)
+        public Link GetLink (Thing Thing)
+        {
+            string Response = GetJSON("http://www.reddit.com/by_id/" + Thing.ToString() + "/.json");
+            return Link.ByID(Response);
+        }
+
+        public Link GetLink (string Url)
+        {
+            string Response = GetJSON(Url + ".json");
+            return Link.ByUrl(Response);
+        }
+
+        public List<Link> GetUrlSubmissions (string Url)
+        {
+            string Response = GetJSON("http://www.reddit.com/api/info.json?url=" + Url);
+            var Submissions = new List<Link>();
+            foreach (var Submission in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
+            {
+                Submissions.Add(Link.Create(Submission["data"]));
+            }
+            return Submissions;
+        }
+
+        public Thing PostSelf (string Subreddit, string Title, string ContentMarkdown)
+        {
+            if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to post a self post");
+            string PostData = new StringBuilder()
+                .Append("title=").Append(Title)
+                .Append("&text=").Append(ContentMarkdown)
+                .Append("&sr=").Append(Subreddit)
+                .Append("&kind=").Append("link")
+                .ToString();
+            var Response = this.Connection.Post("http://www.reddit.com/api/submit", PostData);
+            string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
+            return Thing.Get(Link);
+        }
+
+        public Thing PostLink (string Subreddit, string Title, string Url)
         {
             if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to post a link");
             string PostData = new StringBuilder()
@@ -125,11 +170,9 @@ namespace Reddit
                 .Append("&url=").Append(Url)
                 .Append("&sr=").Append(Subreddit)
                 .Append("&kind=").Append("link")
-                //.Append("&uh=").Append(this.Me.ModHash)
                 .ToString();
             var Response = this.Connection.Post("http://www.reddit.com/api/submit", PostData);
             string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
-            Console.WriteLine(Link);
             return Thing.Get(Link);
         }
 
@@ -139,11 +182,26 @@ namespace Reddit
 
         public void GetUser (string UserName)
         {
-            var Response = GetJSON("http://www.reddit.com/user/" + UserName + "/.json");
+            var Response = GetJSON("http://www.reddit.com/user/" + UserName + "/about.json");
         }
 
         #endregion
 
+        #region Messages
+
+        public List<Message> GetInbox ()
+        {
+            string Response = GetJSON("http://www.reddit.com/message/inbox/.json");
+            var Json = SimpleJSON.JSONDecoder.Decode(Response);
+            var Messages = new List<Message>();
+            foreach (var JMessage in Json["data"]["children"].ArrayValue)
+            {
+                Messages.Add(Message.Create(JMessage));
+            }
+            return Messages;
+        }
+
+        #endregion
     }
 
     public class NotLoggedInException : Exception

@@ -45,6 +45,7 @@ namespace Reddit.Things.API
         public string Media { get; set; }
         public string NumReports { get; set; }
         public int Upvotes { get; set; }
+        public List<Comment> Comments { get; set; }
 
         public static Link Create (JObject Json)
         {
@@ -88,9 +89,21 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        public static Link Create (string Input)
+        public static Link ByID (string Input)
         {
             return Link.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]["children"][0]);
+        }
+
+        public static Link ByUrl (string Input)
+        {
+            var Json = SimpleJSON.JSONDecoder.Decode(Input);
+            var Temp =  Link.Create(Json[0]["data"]["children"][0]["data"]);
+            Temp.Comments = new List<Comment>();
+            foreach (var Comment in Json[1]["data"]["children"].ArrayValue)
+            {
+                Temp.Comments.Add(API.Comment.Create(Comment["data"]));
+            }
+            return Temp;
         }
     }
 }

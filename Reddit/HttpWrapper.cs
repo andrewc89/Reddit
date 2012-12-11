@@ -25,6 +25,8 @@ namespace Reddit
 
         #region Properties
 
+        public string UserAgent { get; set; }
+
         public string Cookie { get; set; }
 
         public Me Me { get; set; }
@@ -44,8 +46,12 @@ namespace Reddit
 
         public string Get (string Uri)
         {
+            if (!Uri.StartsWith("http://"))
+            {
+                Uri = "http://" + Uri;
+            }
             var Request = (HttpWebRequest)WebRequest.Create(Uri);
-            Request.UserAgent = "/r/buildapcsales scanner by /u/acwillmull";
+            Request.UserAgent = this.UserAgent;
             Request.CookieContainer = new CookieContainer();
             Request.CookieContainer.Add(Request.RequestUri, new CookieCollection() { new Cookie("reddit_session", this.Cookie.Replace(",", "%2c")), new Cookie("uh", this.Me.ModHash) });
             Request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
@@ -75,6 +81,7 @@ namespace Reddit
                 ModHash = "&uh=" + this.Me.ModHash;
             }
             var PostData = Encoding.GetBytes(Post + ModHash + "&api_type=json");
+            Request.UserAgent = this.UserAgent;
             Request.Method = "POST";
             Request.ContentType = "application/x-www-form-urlencoded";
             Request.ContentLength = PostData.Length;
