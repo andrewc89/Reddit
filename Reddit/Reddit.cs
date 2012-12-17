@@ -15,6 +15,10 @@ namespace Reddit
     {
         #region Constructor
 
+        /// <summary>
+        /// new Reddit wrapper
+        /// </summary>
+        /// <param name="UserAgent">your useragent per https://github.com/reddit/reddit/wiki/API#Rules </param>
         public Reddit (string UserAgent) 
         {
             this.Me = new Me();
@@ -26,14 +30,27 @@ namespace Reddit
 
         #region Properties
 
+        /// <summary>
+        /// connection instance
+        /// </summary>
         private HttpWrapper Connection { get; set; }       
 
+        /// <summary>
+        /// logged in user
+        /// </summary>
         private Me Me { get; set; }
 
         #endregion
 
         #region Login
 
+        /// <summary>
+        /// log in via API
+        /// required to make additional requests
+        /// </summary>
+        /// <param name="UserName">user's username</param>
+        /// <param name="Password">user's password</param>
+        /// <returns>logged in successfully?</returns>
         public bool Login (string UserName, string Password)
         {
             var Response = Connection.Post("http://www.reddit.com/api/login", "user=" + UserName + "&passwd=" + Password);
@@ -45,6 +62,10 @@ namespace Reddit
             return true;
         }
 
+        /// <summary>
+        /// checks connection to see if logged in
+        /// </summary>
+        /// <returns>logged in to API?</returns>
         public bool LoggedIn ()
         {
             return this.Connection.LoggedIn();
@@ -54,12 +75,23 @@ namespace Reddit
 
         #region Get
 
-        public string GetJSON (string Url)
+        /// <summary>
+        /// internal function to perform get request for JSON info
+        /// </summary>
+        /// <param name="Url">url including http:// and .json suffix</param>
+        /// <returns>response string</returns>
+        private string GetJSON (string Url)
         {
             return this.Connection.Get(Url);
         }
 
-        public string GetThing (Thing Thing, bool Comments = false)
+        /// <summary>
+        /// internal function to get json info of Thing
+        /// </summary>
+        /// <param name="Thing">reddit Thing</param>
+        /// <param name="Comments">comments ? /comments/{thing}.json : /by_id/{thing}.json</param>
+        /// <returns>response string</returns>
+        private string GetThing (Thing Thing, bool Comments = false)
         {
             string Response;
             if (Comments)
@@ -77,6 +109,10 @@ namespace Reddit
 
         #region Me
 
+        /// <summary>
+        /// gets logged in user's info
+        /// </summary>
+        /// <returns>API.Me object</returns>
         private Me GetMe ()
         {
             if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to get your info");
@@ -89,6 +125,11 @@ namespace Reddit
 
         #region Subreddit
 
+        /// <summary>
+        /// gets a subreddit, including links
+        /// </summary>
+        /// <param name="SubredditName">subreddit name</param>
+        /// <returns>API.Subreddit object</returns>
         public Subreddit GetSubreddit (string SubredditName)
         {
             string Response = GetJSON("http://www.reddit.com/r/" + SubredditName + "/.json");
@@ -99,17 +140,45 @@ namespace Reddit
 
         #region Comment
 
+        /// <summary>
+        /// gets a comment
+        /// </summary>
+        /// <param name="Thing">reddit Thing</param>
+        /// <returns>API.Comment object</returns>
         public Comment GetComment (Thing Thing)
         {
             string Response = GetThing(Thing);
             return Comment.Create(Response);
         }
 
+        /// <summary>
+        /// gets a comment by id
+        /// </summary>
+        /// <param name="id">Thing id</param>
+        /// <returns>API.Comment object</returns>
+        public Comment GetComment (string id)
+        {
+            return GetComment(Thing.Get(Kind.Comment.ToString() + "_" + id));
+        }
+
+        /// <summary>
+        /// post a comment in response to a Thing
+        /// </summary>
+        /// <param name="id">Thing id</param>
+        /// <param name="kind">Thing kind</param>
+        /// <param name="CommentMarkdown">comment text in markdown format</param>
+        /// <returns>comment as a Thing</returns>
         public Thing PostComment (string id, Kind kind, string CommentMarkdown)
         {
             return this.PostComment(Thing.Get(kind.ToString() + "_" + id.ToString()), CommentMarkdown);          
         }
 
+        /// <summary>
+        /// post a comment in response to a Thing
+        /// </summary>
+        /// <param name="thing">Thing to respond to</param>
+        /// <param name="CommentMarkdown">comment text in markdown format</param>
+        /// <returns>comment as a Thing</returns>
         public Thing PostComment (Thing thing, string CommentMarkdown)
         {
             if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to post a comment");
@@ -125,12 +194,22 @@ namespace Reddit
 
         #region Link
 
+        /// <summary>
+        /// get submission (link or self post)
+        /// </summary>
+        /// <param name="Thing">submission as Thing</param>
+        /// <returns>API.Link object</returns>
         public Link GetLink (Thing Thing)
         {
             string Response = GetJSON("http://www.reddit.com/by_id/" + Thing.ToString() + "/.json");
             return Link.ByID(Response);
         }
 
+        /// <summary>
+        /// get submission (link or self post) by url
+        /// </summary>
+        /// <param name="Url">url of submission</param>
+        /// <returns>API.Link object</returns>
         public Link GetLink (string Url)
         {
             string Response = GetJSON(Url + ".json");
@@ -180,9 +259,10 @@ namespace Reddit
 
         #region User
 
-        public void GetUser (string UserName)
+        public User GetUser (string UserName)
         {
-            var Response = GetJSON("http://www.reddit.com/user/" + UserName + "/about.json");
+            string Response = GetJSON("http://www.reddit.com/user/" + UserName + "/about.json");
+            return User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
         }
 
         #endregion

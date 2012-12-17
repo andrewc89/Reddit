@@ -44,7 +44,6 @@
     <Compile Include="HttpWrapper.cs" />
     <Compile Include="Things\API\Link.cs" />
     <Compile Include="Things\API\Me.cs" />
-    <Compile Include="JSON\JSON.cs" />
     <Compile Include="Reddit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleJSON\JObject.cs" />

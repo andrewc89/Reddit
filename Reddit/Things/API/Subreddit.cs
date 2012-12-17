@@ -27,9 +27,16 @@ namespace Reddit.Things.API
             var Json = SimpleJSON.JSONDecoder.Decode(Input)["data"];
             var Children = Json["children"];
 
+            Temp.Kind = Kind.Subreddit;
+            if (Children.ArrayValue.Count > 0)
+            {
+                Temp.ID = Children.ArrayValue[0]["data"]["subreddit_id"].StringValue.Split('_')[1];
+            }
+
             Temp.ModHash = Json["modhash"].StringValue;
             Temp.Before = Thing.Get(Json["before"].StringValue);
             Temp.After = Thing.Get(Json["after"].StringValue);
+            
             foreach (var Link in Children.ArrayValue)
             {
                 Temp.Children.Add(API.Link.Create(Link["data"]));
