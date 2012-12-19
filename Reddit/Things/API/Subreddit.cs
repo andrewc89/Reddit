@@ -11,15 +11,39 @@ namespace Reddit.Things.API
     /// </summary>
     public class Subreddit : Thing
     {
+        #region Constructor
+
         public Subreddit ()
         {
-            Children = new List<Link>();
+            Links = new List<Link>();
         }
 
+        #endregion
+
+        #region Properties
+
         public string ModHash { get; set; }
-        public List<Link> Children { get; set; }
+        public List<Link> Links { get; set; }
         public Thing Before { get; set; }
         public Thing After { get; set; }
+
+        #endregion
+
+        #region Functions
+
+        public List<Link> Hot (int Limit = 50)
+        {
+            return Links.GetRange(0, Limit);
+        }
+
+        public List<Link> Top (int Limit = 50)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Factory
 
         public static Subreddit Create (string Input)
         {
@@ -39,10 +63,12 @@ namespace Reddit.Things.API
             
             foreach (var Link in Children.ArrayValue)
             {
-                Temp.Children.Add(API.Link.Create(Link["data"]));
+                Temp.Links.Add(API.Link.Create(Link["data"]));
             }
 
             return Temp;
         }
+
+        #endregion
     }
 }

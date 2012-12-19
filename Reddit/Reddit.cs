@@ -71,7 +71,7 @@ namespace Reddit
             return this.Connection.LoggedIn();
         }
 
-        #endregion        
+        #endregion                
 
         #region Get
 
@@ -122,7 +122,7 @@ namespace Reddit
         }
 
         #endregion
-
+        
         #region Subreddit
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Reddit
         }
 
         /// <summary>
-        /// post a comment in response to a Thing
+        /// post a comment in response to a Thing (Link, Comment, Message)
         /// </summary>
         /// <param name="id">Thing id</param>
         /// <param name="kind">Thing kind</param>
@@ -174,7 +174,7 @@ namespace Reddit
         }
 
         /// <summary>
-        /// post a comment in response to a Thing
+        /// post a comment in response to a Thing (Link, Comment, Message)
         /// </summary>
         /// <param name="thing">Thing to respond to</param>
         /// <param name="CommentMarkdown">comment text in markdown format</param>
@@ -190,6 +190,17 @@ namespace Reddit
             return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
         }
 
+        public Thing EditComment (Thing thing, string CommentMarkdown)
+        {
+            if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to edit a comment");
+            string PostData = new StringBuilder()
+                .Append("thing_id=").Append(thing.ToString())
+                .Append("&text=").Append(CommentMarkdown)
+                .ToString();
+            string Response = this.Connection.Post("http://www.reddit.com/api/editusertext", PostData);
+            return thing;
+        }
+
         #endregion
 
         #region Link
@@ -203,6 +214,11 @@ namespace Reddit
         {
             string Response = GetJSON("http://www.reddit.com/by_id/" + Thing.ToString() + "/.json");
             return Link.ByID(Response);
+        }
+
+        public Link GetSelf (Thing Thing)
+        {
+            return GetLink(Thing);
         }
 
         /// <summary>
@@ -234,7 +250,7 @@ namespace Reddit
                 .Append("title=").Append(Title)
                 .Append("&text=").Append(ContentMarkdown)
                 .Append("&sr=").Append(Subreddit)
-                .Append("&kind=").Append("link")
+                .Append("&kind=").Append("self")
                 .ToString();
             var Response = this.Connection.Post("http://www.reddit.com/api/submit", PostData);
             string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
@@ -253,6 +269,11 @@ namespace Reddit
             var Response = this.Connection.Post("http://www.reddit.com/api/submit", PostData);
             string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
             return Thing.Get(Link);
+        }
+
+        public Thing EditSelf (Thing thing, string CommentMarkdown)
+        {
+            return EditComment(thing, CommentMarkdown);
         }
 
         #endregion

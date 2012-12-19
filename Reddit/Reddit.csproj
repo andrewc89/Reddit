@@ -43,6 +43,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="HttpWrapper.cs" />
     <Compile Include="Things\API\Link.cs" />
+    <Compile Include="Things\API\Listing.cs" />
     <Compile Include="Things\API\Me.cs" />
     <Compile Include="Reddit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
