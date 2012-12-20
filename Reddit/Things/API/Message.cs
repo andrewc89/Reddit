@@ -47,7 +47,7 @@ namespace Reddit.Things.API
             Temp.AuthorName = Json["author"].StringValue;
             Temp.Body = Json["body"].StringValue;
             Temp.BodyHtml = Json["body_html"].StringValue;
-            Temp.ContextUrl = "http://www.reddit.com" + Json["context"].StringValue;
+            Temp.ContextUrl = "" + Json["context"].StringValue;
             Temp.Created = Json["created"].DoubleValue.ToDateTime();
             Temp.CreatedUTC = Json["created_utc"].DoubleValue.ToDateTime();
             Temp.RecipientName = Json["dest"].StringValue;

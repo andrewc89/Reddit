@@ -12,11 +12,14 @@ namespace Reddit.Things.API
     /// </summary>
     public class Comment : Thing
     {
+        #region Constructor
+
         public Comment () { }
 
-        public string Content { get; set; }
-        public string ContentHtml { get; set; }
-        public string ContentText { get; set; }
+        #endregion
+
+        #region Properties
+
         public Thing Link { get; set; }
         public Thing Parent { get; set; }
         public Thing Subreddit { get; set; }
@@ -27,8 +30,20 @@ namespace Reddit.Things.API
         public int Gilded { get; set; }
         public string AuthorName { get; set; }
         //public User ApprovedBy { get; set; }
-        public string Body { get; set; }
-        public string BodyHTML { get; set; }
+        private string _Content;
+        public string Content
+        {
+            get { return _Content; }
+            set
+            {
+                _Content = value;
+                Edited = true;
+                string Response = Connection.Post("/api/editusertext", "text=" + value + "&thing_id=" + this.ToString());
+                var Json = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"];
+                this.ContentHtml = Json["contentHTML"].StringValue;
+            }
+        }
+        public string ContentHtml { get; set; }
         public bool Edited { get; set; }
         public string AuthorFlairText { get; set; }
         public string AuthorFlairCSSClass { get; set; }
@@ -38,6 +53,38 @@ namespace Reddit.Things.API
         public DateTime CreatedUTC { get; set; }
         //public int NumReports { get; set; }
         public int Upvotes { get; set; }
+
+        #endregion
+
+        #region Functions
+
+        public Thing Reply (string CommentMarkdown)
+        {
+            string PostData = new StringBuilder()
+                .Append("thing_id=").Append(this.ToString())
+                .Append("&text=").Append(CommentMarkdown)
+                .ToString();
+            string Response = Connection.Post("/api/comment", PostData);
+            return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
+        }
+
+        public void Edit (string Content)
+        {
+            this.Content = Content;
+        }
+
+        public bool Delete ()
+        {
+            string PostData = new StringBuilder()
+                .Append("id=").Append(this.ToString())
+                .ToString();
+            string Response = Connection.Post("http://reddit.com/api/del", PostData);
+            return true;
+        }
+
+        #endregion
+
+        #region Factory
 
         public static Comment Create (SimpleJSON.JObject Json)
         {
@@ -60,12 +107,12 @@ namespace Reddit.Things.API
             Temp.AuthorName = Json["author"].StringValue;
             Temp.Parent = Thing.Get(Json["parent_id"].StringValue);
             //Temp.ApprovedBy = Json["approved_by"];
-            Temp.Body = Json["body"].StringValue;
+            Temp._Content = Json["body"].StringValue;
             Temp.Edited = Json["edited"].BooleanValue;
             Temp.AuthorFlairText = Json["author_flair_text"].StringValue;
             Temp.AuthorFlairCSSClass = Json["author_flair_css_class"].StringValue;
             Temp.Downvotes = Json["downs"].IntValue;
-            Temp.BodyHTML = Json["body_html"].StringValue;
+            Temp.ContentHtml = Json["body_html"].StringValue;
             Temp.SubredditName = Json["subreddit"].StringValue;
             Temp.Created = Json["created"].DoubleValue.ToDateTime();
             Temp.CreatedUTC = Json["created_utc"].DoubleValue.ToDateTime();
@@ -79,5 +126,7 @@ namespace Reddit.Things.API
         {
             return Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
         }
+
+        #endregion
     }
 }

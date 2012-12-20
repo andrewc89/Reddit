@@ -12,13 +12,25 @@ namespace Reddit.Things.API
     /// TODO: Update summary.
     /// </summary>
     public class Link : Thing
-    {        
+    {
+        #region Properties
+
         public string Domain { get; set; }
         public Thing BannedBy { get; set; }
         public string MediaEmbed { get; set; }
         public string SubRedditName { get; set; }
-        public string SelfTextHtml { get; set; }
-        public string SelfText { get; set; }
+        public string SelfContentHtml { get; set; }
+        private string _SelfContent;
+        public string SelfContent { 
+            get { return _SelfContent; } 
+            set 
+            {
+                if (!IsSelf) throw new Exception(this.ToString() + " is not a self post!");
+                _SelfContent = value;
+                Edited = true;
+                string Response = Connection.Post("/api/editusertext", "text=" + value + "&thing_id=" + this.ToString());
+            } 
+        }
         public int Likes { get; set; }
         public string LinkFlairText { get; set; }
         public bool Clicked { get; set; }
@@ -29,7 +41,18 @@ namespace Reddit.Things.API
         public bool Over18 { get; set; }
         public bool Hidden { get; set; }
         public string Thumbnail { get; set; }
-        public Thing Subreddit { get; set; }
+        private Subreddit _Subreddit;
+        public Subreddit Subreddit { 
+            get 
+            {
+                if (_Subreddit == null)
+                {
+                    string Response = Connection.Get("/r/" + SubRedditName + ".json");
+                    _Subreddit = Subreddit.Create(SubRedditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+                }
+                return _Subreddit;
+            }                       
+        }
         public bool Edited { get; set; }
         public string LinkFlairCSSClass { get; set; }
         public string AuthorFlairCSSClass { get; set; }
@@ -45,7 +68,56 @@ namespace Reddit.Things.API
         public string Media { get; set; }
         public string NumReports { get; set; }
         public int Upvotes { get; set; }
-        public List<Comment> Comments { get; set; }
+        private List<Comment> _Comments;
+        public List<Comment> Comments {             
+            get {
+                if (_Comments == null)
+                {
+                    string Response = Connection.Get("/comments/" + this.ID + ".json", "sort=" + Enums.SortBy.Best.Arg);
+                    Comments = new List<Comment>();
+                    foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
+                    {
+                        Comments.Add(API.Comment.Create(Comment["data"]));
+                    }
+                }
+                return _Comments;                
+            }
+            set { _Comments = value; }
+        }        
+
+        #endregion
+
+        #region Functions
+
+        public Thing Comment (string CommentMarkdown)
+        {
+            string PostData = new StringBuilder()
+                .Append("thing_id=").Append(this.ToString())
+                .Append("&text=").Append(CommentMarkdown)
+                .ToString();
+            string Response = Connection.Post("/api/comment", PostData);
+            return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
+        }
+
+        public void EditContent (string Content)
+        {
+            this.SelfContent = Content;
+        }
+
+        public List<Link> OtherDiscussions ()
+        {
+            string Response = Connection.Get("/api/info.json", "url=" + this.Url);
+            var Links = new List<Link>();
+            foreach (var Link in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
+            {
+                Links.Add(API.Link.Create(Link["data"]));
+            }
+            return Links;
+        }
+
+        #endregion
+
+        #region Factory
 
         public static Link Create (JObject Json)
         {
@@ -57,8 +129,8 @@ namespace Reddit.Things.API
             //Temp.BannedBy = null;
             //Temp.MediaEmbed = null;
             Temp.SubRedditName = Json["subreddit"].StringValue;
-            Temp.SelfTextHtml = Json["selftext_html"].StringValue;
-            Temp.SelfText = Json["selftext"].StringValue;
+            Temp.SelfContentHtml = Json["selftext_html"].StringValue;
+            Temp._SelfContent = Json["selftext"].StringValue;
             //Temp.Likes = Json["likes"].IntValue;
             Temp.LinkFlairText = Json["link_flair_text"].StringValue;            
             Temp.Clicked = Json["clicked"].BooleanValue;
@@ -68,8 +140,7 @@ namespace Reddit.Things.API
             //Temp.ApprovedBy = null;
             Temp.Over18 = Json["over_18"].BooleanValue;
             Temp.Hidden = Json["hidden"].BooleanValue;
-            Temp.Thumbnail = Json["thumbnail"].StringValue;
-            Temp.Subreddit = new Thing { Kind = Kind.Subreddit, ID = Json["subreddit_id"].StringValue };
+            Temp.Thumbnail = Json["thumbnail"].StringValue;            
             Temp.Edited = Json["edited"].BooleanValue;
             Temp.LinkFlairCSSClass = Json["link_flair_css_class"].StringValue;
             Temp.AuthorFlairCSSClass = Json["author_flair_css_class"].StringValue;
@@ -89,21 +160,11 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        public static Link ByID (string Input)
+        public static Link Create (string Input)
         {
             return Link.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]["children"][0]);
         }
 
-        public static Link ByUrl (string Input)
-        {
-            var Json = SimpleJSON.JSONDecoder.Decode(Input);
-            var Temp =  Link.Create(Json[0]["data"]["children"][0]["data"]);
-            Temp.Comments = new List<Comment>();
-            foreach (var Comment in Json[1]["data"]["children"].ArrayValue)
-            {
-                Temp.Comments.Add(API.Comment.Create(Comment["data"]));
-            }
-            return Temp;
-        }
+        #endregion
     }
 }

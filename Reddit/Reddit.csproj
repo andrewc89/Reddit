@@ -41,7 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\DateTimeExtensions.cs" />
-    <Compile Include="HttpWrapper.cs" />
+    <Compile Include="Connection.cs" />
+    <Compile Include="Things\API\Enums\From.cs" />
+    <Compile Include="Things\API\Enums\New.cs" />
+    <Compile Include="Things\API\Enums\SortBy.cs" />
     <Compile Include="Things\API\Link.cs" />
     <Compile Include="Things\API\Listing.cs" />
     <Compile Include="Things\API\Me.cs" />

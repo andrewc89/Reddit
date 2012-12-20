@@ -22,18 +22,12 @@ namespace Reddit
         public Reddit (string UserAgent) 
         {
             this.Me = new Me();
-            this.Connection = new HttpWrapper(this.Me);
-            this.Connection.UserAgent = UserAgent;
+            Connection.UserAgent = UserAgent;
         }
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// connection instance
-        /// </summary>
-        private HttpWrapper Connection { get; set; }       
+        #region Properties   
 
         /// <summary>
         /// logged in user
@@ -53,11 +47,11 @@ namespace Reddit
         /// <returns>logged in successfully?</returns>
         public bool Login (string UserName, string Password)
         {
-            var Response = Connection.Post("http://www.reddit.com/api/login", "user=" + UserName + "&passwd=" + Password);
+            var Response = Connection.Post("/api/login", "user=" + UserName + "&passwd=" + Password);
             if (string.IsNullOrEmpty(Response)) return false;
             SimpleJSON.JObject Json = SimpleJSON.JSONDecoder.Decode(Response);
-            this.Connection.Cookie = (string)Json["json"]["data"]["cookie"];
-            this.Me.ModHash = (string)Json["json"]["data"]["modhash"];  
+            Connection.Cookie = (string)Json["json"]["data"]["cookie"];
+            Connection.ModHash = (string)Json["json"]["data"]["modhash"];  
             GetMe();
             return true;
         }
@@ -68,7 +62,7 @@ namespace Reddit
         /// <returns>logged in to API?</returns>
         public bool LoggedIn ()
         {
-            return this.Connection.LoggedIn();
+            return Connection.LoggedIn();
         }
 
         #endregion                
@@ -82,7 +76,7 @@ namespace Reddit
         /// <returns>response string</returns>
         private string GetJSON (string Url)
         {
-            return this.Connection.Get(Url);
+            return Connection.Get(Url);
         }
 
         /// <summary>
@@ -96,11 +90,11 @@ namespace Reddit
             string Response;
             if (Comments)
             {
-                Response = GetJSON("http://www.reddit.com/comments/" + Thing.ToString() + ".json");
+                Response = GetJSON("/comments/" + Thing.ToString() + ".json");
             }
             else
             {
-                Response = GetJSON("http://www.reddit.com/by_id/" + Thing.ToString() + ".json");
+                Response = GetJSON("/by_id/" + Thing.ToString() + ".json");
             }
             return Response;
         }
@@ -116,7 +110,7 @@ namespace Reddit
         private Me GetMe ()
         {
             if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to get your info");
-            var Response = GetJSON("http://www.reddit.com/api/me.json");
+            var Response = GetJSON("/api/me.json");
             this.Me = Me.Create(Response);
             return this.Me;
         }
@@ -132,8 +126,8 @@ namespace Reddit
         /// <returns>API.Subreddit object</returns>
         public Subreddit GetSubreddit (string SubredditName)
         {
-            string Response = GetJSON("http://www.reddit.com/r/" + SubredditName + "/.json");
-            return Subreddit.Create(Response);
+            string Response = GetJSON("/r/" + SubredditName + ".json");
+            return Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
         }
 
         #endregion
@@ -186,7 +180,7 @@ namespace Reddit
                 .Append("thing_id=").Append(thing.ToString())
                 .Append("&text=").Append(CommentMarkdown)
                 .ToString();
-            string Response = this.Connection.Post("http://www.reddit.com/api/comment", PostData);
+            string Response = Connection.Post("/api/comment", PostData);
             return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
         }
 
@@ -197,7 +191,7 @@ namespace Reddit
                 .Append("thing_id=").Append(thing.ToString())
                 .Append("&text=").Append(CommentMarkdown)
                 .ToString();
-            string Response = this.Connection.Post("http://www.reddit.com/api/editusertext", PostData);
+            string Response = Connection.Post("/api/editusertext", PostData);
             return thing;
         }
 
@@ -212,8 +206,8 @@ namespace Reddit
         /// <returns>API.Link object</returns>
         public Link GetLink (Thing Thing)
         {
-            string Response = GetJSON("http://www.reddit.com/by_id/" + Thing.ToString() + "/.json");
-            return Link.ByID(Response);
+            string Response = GetJSON("/by_id/" + Thing.ToString() + "/.json");
+            return Link.Create(Response);
         }
 
         public Link GetSelf (Thing Thing)
@@ -221,55 +215,16 @@ namespace Reddit
             return GetLink(Thing);
         }
 
-        /// <summary>
-        /// get submission (link or self post) by url
-        /// </summary>
-        /// <param name="Url">url of submission</param>
-        /// <returns>API.Link object</returns>
-        public Link GetLink (string Url)
-        {
-            string Response = GetJSON(Url + ".json");
-            return Link.ByUrl(Response);
-        }
-
         public List<Link> GetUrlSubmissions (string Url)
         {
-            string Response = GetJSON("http://www.reddit.com/api/info.json?url=" + Url);
+            string Response = GetJSON("/api/info.json?url=" + Url);
             var Submissions = new List<Link>();
             foreach (var Submission in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
             {
                 Submissions.Add(Link.Create(Submission["data"]));
             }
             return Submissions;
-        }
-
-        public Thing PostSelf (string Subreddit, string Title, string ContentMarkdown)
-        {
-            if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to post a self post");
-            string PostData = new StringBuilder()
-                .Append("title=").Append(Title)
-                .Append("&text=").Append(ContentMarkdown)
-                .Append("&sr=").Append(Subreddit)
-                .Append("&kind=").Append("self")
-                .ToString();
-            var Response = this.Connection.Post("http://www.reddit.com/api/submit", PostData);
-            string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
-            return Thing.Get(Link);
-        }
-
-        public Thing PostLink (string Subreddit, string Title, string Url)
-        {
-            if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to post a link");
-            string PostData = new StringBuilder()
-                .Append("title=").Append(Title)
-                .Append("&url=").Append(Url)
-                .Append("&sr=").Append(Subreddit)
-                .Append("&kind=").Append("link")
-                .ToString();
-            var Response = this.Connection.Post("http://www.reddit.com/api/submit", PostData);
-            string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
-            return Thing.Get(Link);
-        }
+        }        
 
         public Thing EditSelf (Thing thing, string CommentMarkdown)
         {
@@ -282,7 +237,7 @@ namespace Reddit
 
         public User GetUser (string UserName)
         {
-            string Response = GetJSON("http://www.reddit.com/user/" + UserName + "/about.json");
+            string Response = GetJSON("/user/" + UserName + "/about.json");
             return User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
         }
 
@@ -292,7 +247,7 @@ namespace Reddit
 
         public List<Message> GetInbox ()
         {
-            string Response = GetJSON("http://www.reddit.com/message/inbox/.json");
+            string Response = GetJSON("/message/inbox/.json");
             var Json = SimpleJSON.JSONDecoder.Decode(Response);
             var Messages = new List<Message>();
             foreach (var JMessage in Json["data"]["children"].ArrayValue)
