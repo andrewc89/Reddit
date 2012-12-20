@@ -13,7 +13,7 @@ namespace Test
         static void Main (string[] args)
         {
             var Reddit = new Reddit.Reddit("testing C# reddit API wrapper by /u/GrammarNazism, https://www.github.com/theyshookhands/Reddit");
-            Console.WriteLine(Reddit.Login("GrammarNazism", "wazzup2"));
+            Console.WriteLine(Reddit.Login("", ""));
 
             var Programming = Reddit.GetSubreddit("programming");
             foreach (var Link in Programming.Links)
