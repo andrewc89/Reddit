@@ -17,8 +17,7 @@ namespace Reddit.Things.API
 
         public string Domain { get; set; }
         public Thing BannedBy { get; set; }
-        public string MediaEmbed { get; set; }
-        public string SubRedditName { get; set; }
+        public string MediaEmbed { get; set; }        
         public string SelfContentHtml { get; set; }
         private string _SelfContent;
         public string SelfContent { 
@@ -41,14 +40,15 @@ namespace Reddit.Things.API
         public bool Over18 { get; set; }
         public bool Hidden { get; set; }
         public string Thumbnail { get; set; }
+        private string SubredditName;
         private Subreddit _Subreddit;
         public Subreddit Subreddit { 
             get 
             {
                 if (_Subreddit == null)
                 {
-                    string Response = Connection.Get("/r/" + SubRedditName + ".json");
-                    _Subreddit = Subreddit.Create(SubRedditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+                    string Response = Connection.Get("/r/" + SubredditName + ".json");
+                    _Subreddit = Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Subreddit;
             }                       
@@ -128,7 +128,7 @@ namespace Reddit.Things.API
             Temp.Domain = Json["domain"].StringValue;
             //Temp.BannedBy = null;
             //Temp.MediaEmbed = null;
-            Temp.SubRedditName = Json["subreddit"].StringValue;
+            Temp.SubredditName = Json["subreddit"].StringValue;
             Temp.SelfContentHtml = Json["selftext_html"].StringValue;
             Temp._SelfContent = Json["selftext"].StringValue;
             //Temp.Likes = Json["likes"].IntValue;

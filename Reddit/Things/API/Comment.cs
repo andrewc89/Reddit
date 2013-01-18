@@ -22,13 +22,39 @@ namespace Reddit.Things.API
 
         public Thing Link { get; set; }
         public Thing Parent { get; set; }
-        public Thing Subreddit { get; set; }
+        private string SubredditName;
+        private Subreddit _Subreddit;
+        public Subreddit Subreddit 
+        {
+            get 
+            {
+                if (_Subreddit == null)
+                {
+                    string Response = Connection.Get("/r/" + SubredditName + ".json");
+                    _Subreddit = Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+                }
+                return _Subreddit;
+            }           
+        }
 
         //public User BannedBy { get; set; }
         public int Likes { get; set; }
         public List<Comment> Replies { get; set; }
         public int Gilded { get; set; }
-        public string AuthorName { get; set; }
+        private string AuthorName;
+        private User _Author;
+        public User Author
+        {
+            get
+            {
+                if (_Author == null)
+                {
+                    string Response = Connection.Get("/user/" + AuthorName + "/about.json");
+                    _Author = User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+                }
+                return _Author;
+            }            
+        }
         //public User ApprovedBy { get; set; }
         private string _Content;
         public string Content
@@ -47,8 +73,7 @@ namespace Reddit.Things.API
         public bool Edited { get; set; }
         public string AuthorFlairText { get; set; }
         public string AuthorFlairCSSClass { get; set; }
-        public int Downvotes { get; set; }
-        public string SubredditName { get; set; }
+        public int Downvotes { get; set; }        
         public DateTime Created { get; set; }
         public DateTime CreatedUTC { get; set; }
         //public int NumReports { get; set; }
@@ -91,8 +116,7 @@ namespace Reddit.Things.API
             var Temp = new Comment();
 
             Temp.ID = Json["id"].StringValue;
-            Temp.Kind = Kind.Comment;
-            Temp.Subreddit = Thing.Get(Json["subreddit_id"].StringValue);
+            Temp.Kind = Kind.Comment;            
             //Temp.BannedBy = Json["banned_by"];            
             Temp.Likes = Json["likes"].IntValue;
             Temp.Replies = new List<Comment>();

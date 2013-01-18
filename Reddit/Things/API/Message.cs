@@ -20,7 +20,20 @@ namespace Reddit.Things.API
 
         #region Properties
 
-        public string AuthorName { get; set; }
+        private string AuthorName;
+        private User _Author;
+        public User Author
+        {
+            get
+            {
+                if (_Author == null)
+                {
+                    string Response = Connection.Get("/user/" + AuthorName + "/about.json");
+                    _Author = User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+                }
+                return _Author;
+            }
+        }
         public string Body { get; set; }
         public string BodyHtml { get; set; }
         public string ContextUrl { get; set; }

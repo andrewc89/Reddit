@@ -7,31 +7,58 @@ namespace Reddit.Things.API
     using System.Text;
     using Extensions;
     using SimpleJSON;
+    using Things.API;
 
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
     public class Me : Thing
     {
+        #region Constructor
+
         public Me () 
         {
             this.Kind = Kind.Account;
         }
 
+        #endregion
+
+        #region Properties
+
         public string ModHash { get; set; }
         public string Name { get; set; }
-
         public bool HasMail { get; set; }
         public bool HasModMail { get; set; }
-
         public DateTime Created { get; set; }        
         public DateTime CreatedUTC { get; set; }
-
         public long LinkKarma { get; set; }
         public long CommentKarma { get; set; }
-
         public bool IsGold { get; set; }
-        public bool IsMod { get; set; }        
+        public bool IsMod { get; set; }
+
+        #endregion
+
+        #region Public Functions
+
+        public List<Message> Mail (Enums.Messages messages = null)
+        {
+            if (messages == null)
+            {
+                messages = Enums.Messages.Inbox;
+            }
+            string Response = Connection.Get("/message/" + messages.Arg + ".json");
+            var Messages = new List<Message>();
+            foreach (var Message in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
+            {
+                Messages.Add(Things.API.Message.Create(Message));
+            }
+
+            return Messages;
+        }
+
+        #endregion
+
+        #region Factory
 
         public static Me Create (JObject Json)
         {
@@ -60,5 +87,7 @@ namespace Reddit.Things.API
         {
             return Me.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
         }
+
+        #endregion
     }
 }

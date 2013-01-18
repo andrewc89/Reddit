@@ -32,7 +32,7 @@ namespace Reddit
         /// <summary>
         /// logged in user
         /// </summary>
-        private Me Me { get; set; }
+        public Me Me { get; set; }
 
         #endregion
 
@@ -128,6 +128,16 @@ namespace Reddit
         {
             string Response = GetJSON("/r/" + SubredditName + ".json");
             return Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+        }
+
+        /// <summary>
+        /// gets a subreddit, including links
+        /// </summary>
+        /// <param name="SubredditName">subreddit name</param>
+        /// <returns>API.Subreddit object</returns>
+        public Subreddit r (string SubredditName)
+        {
+            return GetSubreddit(SubredditName);
         }
 
         #endregion

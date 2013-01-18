@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using System;
 using System.Linq;
-using System.Text;
-using Reddit;
-using Reddit.Things;
-using System.Threading;
 using Reddit.Things.API.Enums;
 
 namespace Test
@@ -13,12 +9,13 @@ namespace Test
     {
         static void Main (string[] args)
         {
-            var r = new Reddit.Reddit("testing C# reddit API wrapper by /u/GrammarNazism, https://www.github.com/theyshookhands/Reddit");
-            Console.WriteLine(r.Login("", ""));
-            var RedditDev = r.GetSubreddit("testjswrapper");
-            var TopPosts = RedditDev.Top(From.ThisWeek);
-            var Comment = TopPosts.First().Comment("idk what's going on but this is my opinion!");	
-            
+            var reddit = new Reddit.Reddit("testing C# reddit API wrapper by /u/GrammarNazism, https://www.github.com/theyshookhands/Reddit");
+            reddit.Login("", "");
+            var Mail = reddit.Me.Mail();
+            foreach (var Message in Mail)
+            {
+                var author = Message.Author;
+            }
         }
     }
 }

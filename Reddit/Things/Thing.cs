@@ -10,6 +10,12 @@ namespace Reddit.Things
     {
         public Thing () { }
 
+        public Thing (string ID, Kind kind)
+        {
+            this.ID = ID;
+            this.Kind = kind;
+        }
+
         public string ID { get; set; }
         public Kind Kind { get; set; }        
 

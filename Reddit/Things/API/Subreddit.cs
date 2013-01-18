@@ -70,20 +70,32 @@ namespace Reddit.Things.API
             return Links.GetRange(0, Limit);
         }
 
-        public List<Link> New (Enums.Sort New, int Limit = 50)
+        public List<Link> New (Enums.Sort sort = null, int Limit = 50)
         {
-            string Args = "limit=" + Limit + "&sort=" + New.Arg;
+            if (sort == null)
+            {
+                sort = Enums.Sort.Rising;
+            }
+            string Args = "limit=" + Limit + "&sort=" + sort.Arg;
             return Sorted("new", Args);
         }
 
-        public List<Link> Top (Enums.From from, int Limit = 50)
+        public List<Link> Top (Enums.From from = null, int Limit = 50)
         {
+            if (from == null)
+            {
+                from = Enums.From.Today;
+            }
             string Args = "limit=" + Limit + "&t=" + from.Arg;
             return Sorted("top", Args);
         }
 
-        public List<Link> Controversial (Enums.From from, int Limit = 50)
+        public List<Link> Controversial (Enums.From from = null, int Limit = 50)
         {
+            if (from == null)
+            {
+                from = Enums.From.Today;
+            }
             string Args = "limit=" + Limit + "&t=" + from.Arg;
             return Sorted("controversial", Args);
         }

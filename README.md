@@ -1,13 +1,13 @@
-## C# Reddit API Wrapper
+# C# Reddit API Wrapper
 
-# Setup
+## Setup
 
 <pre>
 	var r = new Reddit("your personal user agent here");
 	r.Login("username", "password");
 </pre>
 
-# Basic Usage
+## Basic Usage
 
 <pre>
 	var RedditDev = r.GetSubreddit("redditdev");

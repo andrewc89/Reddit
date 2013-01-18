@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reddit", "Reddit\Reddit.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{96D73626-E639-4857-9F67-ABE15D3F8517}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reddit.Tests", "Reddit.Tests\Reddit.Tests.csproj", "{54FFBEB2-A3F7-4157-9D90-249896315D99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,16 @@ Global
 		{96D73626-E639-4857-9F67-ABE15D3F8517}.Release|Mixed Platforms.Build.0 = Release|x86
 		{96D73626-E639-4857-9F67-ABE15D3F8517}.Release|x86.ActiveCfg = Release|x86
 		{96D73626-E639-4857-9F67-ABE15D3F8517}.Release|x86.Build.0 = Release|x86
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{54FFBEB2-A3F7-4157-9D90-249896315D99}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
