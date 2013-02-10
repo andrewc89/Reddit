@@ -2,12 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net;
 using System.IO;
+using System.Text;
 using Reddit.Things;
 using Reddit.Things.API;
 using System.Runtime.Serialization;
+using Reddit.Exceptions;
 
 namespace Reddit
 {
@@ -27,7 +28,7 @@ namespace Reddit
 
         #endregion
 
-        #region Properties   
+        #region Properties
 
         /// <summary>
         /// logged in user
@@ -268,27 +269,5 @@ namespace Reddit
         }
 
         #endregion
-    }
-
-    public class NotLoggedInException : Exception
-    {
-        public NotLoggedInException ()
-        {
-        }
-
-        public NotLoggedInException (string Message)
-            : base(Message)
-        {
-        }
-
-        public NotLoggedInException (string Message, Exception InnerException)
-            : base(Message, InnerException)
-        {
-        }
-
-        protected NotLoggedInException (SerializationInfo Info, StreamingContext Context)
-            : base(Info, Context)
-        {
-        }
     }
 }

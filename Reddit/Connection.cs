@@ -8,6 +8,7 @@ namespace Reddit
     using System.Net;
     using System.IO;
     using Things.API;
+    using Exceptions;
 
     /// <summary>
     /// TODO: Update summary.

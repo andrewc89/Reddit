@@ -70,33 +70,47 @@ namespace Reddit.Things.API
             return Links.GetRange(0, Limit);
         }
 
-        public List<Link> New (Enums.Sort sort = null, int Limit = 50)
+        public List<Link> New (Enums.Sort Sort = null, int Limit = 50)
         {
-            if (sort == null)
+            if (Sort == null)
             {
-                sort = Enums.Sort.Rising;
+                Sort = Enums.Sort.Rising;
             }
-            string Args = "limit=" + Limit + "&sort=" + sort.Arg;
+            string Args = "limit=" + Limit + "&sort=" + Sort.Arg;
             return Sorted("new", Args);
         }
 
-        public List<Link> Top (Enums.From from = null, int Limit = 50)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="From">one of: Today, ThisHour, ThisWeek, ThisMonth, ThisYear</param>
+        /// <param name="Limit"></param>
+        /// <returns></returns>
+        public List<Link> Top (Enums.From From = null, int Limit = 50)
         {
-            if (from == null)
+            if (From == null)
             {
-                from = Enums.From.Today;
+                From = Enums.From.Today;
             }
-            string Args = "limit=" + Limit + "&t=" + from.Arg;
+            if (From == Enums.From.Forever)
+            {
+                throw new Exception("Can't apply From.Forever in this context");
+            }
+            string Args = "limit=" + Limit + "&t=" + From.Arg;
             return Sorted("top", Args);
         }
 
-        public List<Link> Controversial (Enums.From from = null, int Limit = 50)
+        public List<Link> Controversial (Enums.From From = null, int Limit = 50)
         {
-            if (from == null)
+            if (From == null)
             {
-                from = Enums.From.Today;
+                From = Enums.From.Today;
             }
-            string Args = "limit=" + Limit + "&t=" + from.Arg;
+            if (From == Enums.From.Forever)
+            {
+                throw new Exception("Can't apply From.Forever in this context");
+            }
+            string Args = "limit=" + Limit + "&t=" + From.Arg;
             return Sorted("controversial", Args);
         }
 
@@ -119,7 +133,7 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        public static Subreddit Create (string Name, SimpleJSON.JObject Json)
+        internal static Subreddit Create (string Name, SimpleJSON.JObject Json)
         {
             var Temp = new Subreddit();
             Temp.Name = Name;

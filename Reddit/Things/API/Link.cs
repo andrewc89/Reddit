@@ -7,6 +7,7 @@ namespace Reddit.Things.API
     using System.Text;
     using Extensions;
     using SimpleJSON;
+    using Things.API.Enums;
 
     /// <summary>
     /// TODO: Update summary.
@@ -74,10 +75,10 @@ namespace Reddit.Things.API
                 if (_Comments == null)
                 {
                     string Response = Connection.Get("/comments/" + this.ID + ".json", "sort=" + Enums.SortBy.Best.Arg);
-                    Comments = new List<Comment>();
+                    _Comments = new List<Comment>();
                     foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
                     {
-                        Comments.Add(API.Comment.Create(Comment["data"]));
+                        _Comments.Add(API.Comment.Create(Comment["data"]));
                     }
                 }
                 return _Comments;                
@@ -88,6 +89,30 @@ namespace Reddit.Things.API
         #endregion
 
         #region Functions
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Sort">one of: SortBy.Hot, SortBy.New, SortBy.Old, SortBy.Top, SortBy.Controversial</param>
+        /// <returns></returns>
+        public List<Comment> GetComments(SortBy Sort = null)
+        {
+            if (Sort == null)
+            {
+                Sort = SortBy.Hot;
+            }
+            if (Sort == SortBy.Best || Sort == SortBy.Old)
+            {
+                throw new Exception("Can't apply SortBy.Best or SortBy.Old in this context");
+            }
+            string Response = Connection.Get("/comments/" + ID + ".json", "sort=" + Sort.Arg);
+            var Comments = new List<Comment>();
+            foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
+            {
+                Comments.Add(API.Comment.Create(Comment["data"]));
+            }
+            return Comments;
+        }
 
         public Thing Comment (string CommentMarkdown)
         {
@@ -119,7 +144,7 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        public static Link Create (JObject Json)
+        internal static Link Create (JObject Json)
         {
             var Temp = new Link();            
 
@@ -160,7 +185,7 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        public static Link Create (string Input)
+        internal static Link Create (string Input)
         {
             return Link.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]["children"][0]);
         }

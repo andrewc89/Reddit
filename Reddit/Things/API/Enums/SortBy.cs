@@ -11,7 +11,7 @@ namespace Reddit.Things.API.Enums
     /// </summary>
     public sealed class SortBy
     {
-        public readonly string Arg;
+        internal readonly string Arg;
 
         public static readonly SortBy Best = new SortBy("best");
         public static readonly SortBy Top = new SortBy("top");        

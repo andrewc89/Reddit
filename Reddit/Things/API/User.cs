@@ -6,12 +6,15 @@ namespace Reddit.Things.API
     using System.Linq;
     using System.Text;
     using Extensions;
+    using Things.API.Enums;
 
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
     public class User : Thing
     {
+        #region Properties
+
         public bool HasMail { get; set; }
         public string Name { get; set; }
         public bool IsFriend { get; set; }
@@ -23,7 +26,44 @@ namespace Reddit.Things.API
         public bool IsMod { get; set; }
         public bool HasModMail { get; set; }
 
-        public static User Create (SimpleJSON.JObject Json)
+        #endregion
+
+        #region Public Functions
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Sort">one of: SortBy.Hot, SortBy.New, SortBy.Top, SortBy.Controversial</param>
+        /// <param name="From">one of: From.ThisHour, From.Today, From.ThisWeek, From.ThisMonth, From.ThisYear, From.Forever</param>
+        /// <returns></returns>
+        public List<Comment> GetComments(SortBy Sort = null, From From = null)
+        {
+            if (Sort == null)
+            {
+                Sort = SortBy.Hot;
+            }
+            if (From == null)
+            {
+                From = Enums.From.Forever;
+            }
+            if (Sort == SortBy.Best || Sort == SortBy.Old)
+            {
+                throw new Exception("Can't apply SortBy.Best or SortBy.Old in this context");
+            }
+            string Response = Connection.Get("/user/" + Name + "/comments.json", "sort=" + Sort.Arg + "&t=" + From.Arg);
+            var Comments = new List<Comment>();
+            foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
+            {
+                Comments.Add(API.Comment.Create(Comment["data"]));
+            }
+            return Comments;
+        }
+
+        #endregion
+
+        #region Factories
+
+        internal static User Create (SimpleJSON.JObject Json)
         {
             var Temp = new User();
 
@@ -43,14 +83,16 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        public static User ByID (string Input)
+        internal static User ByID (string Input)
         {
             throw new NotImplementedException();
         }
 
-        public static User ByUrl (string Input)
+        internal static User ByUrl (string Input)
         {
             return Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
         }
+
+        #endregion
     }
 }

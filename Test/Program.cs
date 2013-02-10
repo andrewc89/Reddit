@@ -9,13 +9,11 @@ namespace Test
     {
         static void Main (string[] args)
         {
-            var reddit = new Reddit.Reddit("testing C# reddit API wrapper by /u/GrammarNazism, https://www.github.com/theyshookhands/Reddit");
-            reddit.Login("", "");
-            var Mail = reddit.Me.Mail();
-            foreach (var Message in Mail)
-            {
-                var author = Message.Author;
-            }
+            var reddit = new Reddit.Reddit("testing C# reddit API wrapper, https://www.github.com/theyshookhands/Reddit");
+            reddit.Login("testjswrapper", "testjswrapper");
+            var Top = reddit.r("testjswrapper").Top();
+            Top.First().Comment("test comment");
+            reddit.GetUser("testjswrapper");
         }
     }
 }
