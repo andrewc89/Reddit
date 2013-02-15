@@ -52,7 +52,7 @@ namespace Reddit.Things.API
             }
             string Response = Connection.Get("/user/" + Name + "/comments.json", "sort=" + Sort.Arg + "&t=" + From.Arg);
             var Comments = new List<Comment>();
-            foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
+            foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
             {
                 Comments.Add(API.Comment.Create(Comment["data"]));
             }

@@ -18,7 +18,7 @@ namespace Reddit.Things.API.Enums
         public static readonly SortBy New = new SortBy("new");
         public static readonly SortBy Hot = new SortBy("hot");
         public static readonly SortBy Controversial = new SortBy("controversial");
-        public static readonly SortBy Old = new SortBy("old");       
+        public static readonly SortBy Old = new SortBy("old");  
 
         private SortBy (string Arg)
         {

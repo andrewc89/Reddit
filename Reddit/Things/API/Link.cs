@@ -69,22 +69,22 @@ namespace Reddit.Things.API
         public string Media { get; set; }
         public string NumReports { get; set; }
         public int Upvotes { get; set; }
-        private List<Comment> _Comments;
-        public List<Comment> Comments {             
-            get {
-                if (_Comments == null)
-                {
-                    string Response = Connection.Get("/comments/" + this.ID + ".json", "sort=" + Enums.SortBy.Best.Arg);
-                    _Comments = new List<Comment>();
-                    foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
-                    {
-                        _Comments.Add(API.Comment.Create(Comment["data"]));
-                    }
-                }
-                return _Comments;                
-            }
-            set { _Comments = value; }
-        }        
+        //private List<Comment> _Comments;
+        //public List<Comment> Comments {             
+        //    get {
+        //        if (_Comments == null)
+        //        {
+        //            string Response = Connection.Get("/comments/" + this.ID + ".json", "sort=" + Enums.SortBy.Best.Arg);
+        //            _Comments = new List<Comment>();
+        //            foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
+        //            {
+        //                _Comments.Add(API.Comment.Create(Comment["data"]));
+        //            }
+        //        }
+        //        return _Comments;                
+        //    }
+        //    set { _Comments = value; }
+        //}        
 
         #endregion
 
