@@ -39,7 +39,18 @@ namespace Reddit.Things.API
 
         //public User BannedBy { get; set; }
         public int Likes { get; set; }
-        public List<Comment> Replies { get; set; }
+        private List<Comment> _Comments;
+        public List<Comment> Comments
+        {
+            get
+            {
+                if (_Comments == null || _Comments.Count == 0)
+                {
+                    // load the comment's replies
+                }
+                return _Comments;
+            }
+        }
         public int Gilded { get; set; }
         private string AuthorName;
         private User _Author;
@@ -111,7 +122,7 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        public static Comment Create (SimpleJSON.JObject Json)
+        internal static Comment Create (SimpleJSON.JObject Json)
         {
             var Temp = new Comment();
 
@@ -119,12 +130,12 @@ namespace Reddit.Things.API
             Temp.Kind = Kind.Comment;            
             //Temp.BannedBy = Json["banned_by"];            
             Temp.Likes = Json["likes"].IntValue;
-            Temp.Replies = new List<Comment>();
+            Temp._Comments = new List<Comment>();
             if (Json["replies"].ArrayValue != null)
             {
                 foreach (var Reply in Json["replies"]["data"]["children"].ArrayValue)
                 {
-                    Temp.Replies.Add(Comment.Create(Reply));
+                    Temp.Comments.Add(Comment.Create(Reply));
                 }
             }
             Temp.Gilded = Json["gilded"].IntValue;
@@ -146,7 +157,7 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        public static Comment Create (string Input)
+        internal static Comment Create (string Input)
         {
             return Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
         }

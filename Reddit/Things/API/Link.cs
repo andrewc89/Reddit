@@ -64,27 +64,37 @@ namespace Reddit.Things.API
         public DateTime Created { get; set; }
         public string Url { get; set; }
         public string AuthorFlairText { get; set; }
-        public string Author { get; set; }
+        public string AuthorName { get; set; }
+        private User _Author;
+        public User Author
+        {
+            get
+            {
+                if (_Author == null)
+                {
+                    string Response = Connection.Get("/user/" + AuthorName + "/about.json");
+                    _Author = User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+                }
+                return _Author;
+            }
+        }
         public DateTime CreatedUTC { get; set; }
         public string Media { get; set; }
         public string NumReports { get; set; }
         public int Upvotes { get; set; }
-        //private List<Comment> _Comments;
-        //public List<Comment> Comments {             
-        //    get {
-        //        if (_Comments == null)
-        //        {
-        //            string Response = Connection.Get("/comments/" + this.ID + ".json", "sort=" + Enums.SortBy.Best.Arg);
-        //            _Comments = new List<Comment>();
-        //            foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
-        //            {
-        //                _Comments.Add(API.Comment.Create(Comment["data"]));
-        //            }
-        //        }
-        //        return _Comments;                
-        //    }
-        //    set { _Comments = value; }
-        //}        
+        private List<Comment> _Comments;
+        public List<Comment> Comments
+        {
+            get
+            {
+                if (_Comments == null)
+                {
+                    _Comments = GetComments();
+                }
+                return _Comments;
+            }
+            set { _Comments = value; }
+        }        
 
         #endregion
 
@@ -126,6 +136,10 @@ namespace Reddit.Things.API
 
         public void EditContent (string Content)
         {
+            if (!IsSelf)
+            {
+                throw new Exception("This Link is not a self post so there is no SelfContent to edit.");
+            }
             this.SelfContent = Content;
         }
 
@@ -177,7 +191,7 @@ namespace Reddit.Things.API
             Temp.CreatedUTC = Json["created_utc"].DoubleValue.ToDateTime();
             Temp.Url = Json["url"].StringValue;
             Temp.AuthorFlairText = Json["author_flair_text"].StringValue;
-            Temp.Author = Json["author"].StringValue;
+            Temp.AuthorName = Json["author"].StringValue;
             //Temp.Media = null;
             //Temp.NumReports = null;
             Temp.Upvotes = Json["ups"].IntValue;

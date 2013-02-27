@@ -25,6 +25,18 @@ namespace Reddit.Things.API
         public bool IsGold { get; set; }
         public bool IsMod { get; set; }
         public bool HasModMail { get; set; }
+        private List<Comment> _Comments;
+        public List<Comment> Comments
+        {
+            get
+            {
+                if (_Comments == null)
+                {
+                    _Comments = GetComments();
+                }
+                return _Comments;
+            }
+        }
 
         #endregion
 

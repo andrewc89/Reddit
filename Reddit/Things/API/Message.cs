@@ -52,7 +52,7 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        public static Message Create (SimpleJSON.JObject Json)
+        internal static Message Create (SimpleJSON.JObject Json)
         {
             Json = Json["data"];
             var Temp = new Message();

@@ -60,7 +60,7 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        public static Me Create (JObject Json)
+        internal static Me Create (JObject Json)
         {
             var Temp = new Me();            
 
@@ -83,7 +83,7 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        public static Me Create (string Input)
+        internal static Me Create (string Input)
         {
             return Me.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
         }
