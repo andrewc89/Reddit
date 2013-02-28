@@ -57,7 +57,9 @@
     <Compile Include="SimpleJSON\JSONStreamEncoder.cs" />
     <Compile Include="Things\API\Comment.cs" />
     <Compile Include="Things\API\Message.cs" />
+    <Compile Include="Things\API\Meta\SubredditHeader.cs" />
     <Compile Include="Things\API\Subreddit.cs" />
+    <Compile Include="Things\API\Meta\SubredditMetaData.cs" />
     <Compile Include="Things\API\User.cs" />
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Things\Kind.cs" />

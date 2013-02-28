@@ -26,6 +26,19 @@ namespace Reddit.Things.API
         public List<Link> Links { get; set; }
         public Thing Before { get; set; }
         public Thing After { get; set; }
+        private Meta.SubredditMetaData _MetaData;
+        public Meta.SubredditMetaData MetaData
+        {
+            get
+            {
+                if (_MetaData == null)
+                {
+                    string Response = Connection.Get("/r/" + Name + "/about.json");
+                    _MetaData = Meta.SubredditMetaData.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
+                }
+                return _MetaData;
+            }
+        }
 
         #endregion
 

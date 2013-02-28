@@ -91,20 +91,10 @@ namespace Reddit
         /// </summary>
         /// <param name="SubredditName">subreddit name</param>
         /// <returns>Subreddit wrapper object</returns>
-        public Subreddit GetSubreddit (string SubredditName)
+        public Subreddit r (string SubredditName)
         {
             string Response = Connection.Get("/r/" + SubredditName + ".json");
             return Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
-        }
-
-        /// <summary>
-        /// gets a subreddit, including links
-        /// </summary>
-        /// <param name="SubredditName">subreddit name</param>
-        /// <returns>Subreddit wrapper object</returns>
-        public Subreddit r (string SubredditName)
-        {
-            return GetSubreddit(SubredditName);
         }
 
         #endregion
