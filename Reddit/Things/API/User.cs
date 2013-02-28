@@ -3,8 +3,6 @@ namespace Reddit.Things.API
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using Extensions;
     using Things.API.Enums;
 

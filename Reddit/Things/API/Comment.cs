@@ -3,7 +3,6 @@ namespace Reddit.Things.API
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     using Extensions;
 
@@ -20,8 +19,29 @@ namespace Reddit.Things.API
 
         #region Properties
 
-        public Thing Link { get; set; }
-        public Thing Parent { get; set; }
+        private string LinkId;
+        internal Link _Link;
+        public Link Link
+        {
+            get
+            {
+                if (_Link == null)
+                {
+                    string Response = Connection.Get("/comments/" + LinkId + ".json");
+                    _Link = Link.Create(SimpleJSON.JSONDecoder.Decode(Response)[0]["data"]["children"][0]["data"]);
+                }
+                return _Link;
+            }
+        }
+        private string ParentId;
+        private Comment _Parent;
+        public Comment Parent
+        {
+            get
+            {
+                return _Parent;
+            }
+        }
         private string SubredditName;
         private Subreddit _Subreddit;
         public Subreddit Subreddit 
@@ -34,7 +54,7 @@ namespace Reddit.Things.API
                     _Subreddit = Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Subreddit;
-            }           
+            }
         }
 
         //public User BannedBy { get; set; }
@@ -64,7 +84,7 @@ namespace Reddit.Things.API
                     _Author = User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Author;
-            }            
+            }
         }
         //public User ApprovedBy { get; set; }
         private string _Content;
@@ -126,21 +146,24 @@ namespace Reddit.Things.API
         {
             var Temp = new Comment();
 
+            Temp.LinkId = Json["link_id"].StringValue.Remove(0, 3);
             Temp.ID = Json["id"].StringValue;
             Temp.Kind = Kind.Comment;            
             //Temp.BannedBy = Json["banned_by"];            
             Temp.Likes = Json["likes"].IntValue;
             Temp._Comments = new List<Comment>();
-            if (Json["replies"].ArrayValue != null)
+            if (Json["replies"].ObjectValue != null && Json["replies"]["data"].ObjectValue != null)
             {
                 foreach (var Reply in Json["replies"]["data"]["children"].ArrayValue)
                 {
-                    Temp.Comments.Add(Comment.Create(Reply));
+                    var ReplyObj = Comment.Create(Reply["data"]);
+                    ReplyObj._Parent = Temp;
+                    Temp._Comments.Add(ReplyObj);
                 }
             }
             Temp.Gilded = Json["gilded"].IntValue;
             Temp.AuthorName = Json["author"].StringValue;
-            Temp.Parent = Thing.Get(Json["parent_id"].StringValue);
+            Temp.ParentId = Json["parent_id"].StringValue;
             //Temp.ApprovedBy = Json["approved_by"];
             Temp._Content = Json["body"].StringValue;
             Temp.Edited = Json["edited"].BooleanValue;

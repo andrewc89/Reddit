@@ -1,11 +1,9 @@
 ﻿
 namespace Reddit.Things
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class Kind
     {
         private readonly int ID;

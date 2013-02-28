@@ -3,7 +3,6 @@ namespace Reddit.Things.API
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     using Extensions;
     using SimpleJSON;
@@ -119,7 +118,9 @@ namespace Reddit.Things.API
             var Comments = new List<Comment>();
             foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
             {
-                Comments.Add(API.Comment.Create(Comment["data"]));
+                var CommentObj = API.Comment.Create(Comment["data"]);
+                CommentObj._Link = this;
+                Comments.Add(CommentObj);
             }
             return Comments;
         }

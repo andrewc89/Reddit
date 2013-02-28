@@ -3,11 +3,8 @@ namespace Reddit.Things.API
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using Extensions;
     using SimpleJSON;
-    using Things.API;
 
     /// <summary>
     /// TODO: Update summary.

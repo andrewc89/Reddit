@@ -2,9 +2,6 @@
 namespace Reddit.Things.API
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using Extensions;
 
     /// <summary>
@@ -40,9 +37,33 @@ namespace Reddit.Things.API
         public DateTime Created { get; set; }
         public DateTime CreatedUTC { get; set; }
         public string RecipientName { get; set; }
-        public Thing FirstMessage { get; set; }
+        private string FirstMessageId;
+        //private Message _FirstMessage;
+        //public Message FirstMessage
+        //{
+        //    get
+        //    {
+        //        if (_FirstMessage == null)
+        //        {
+
+        //        }
+        //        return _FirstMessage;
+        //    }
+        //}
         public bool New { get; set; }
-        public Thing Parent { get; set; }
+        private string ParentId;
+        //private Message _Parent;
+        //public Message Parent
+        //{
+        //    get
+        //    {
+        //        if (_Parent == null)
+        //        {
+        //            string Response = Connection.Get("");
+        //        }
+        //        return _Parent;
+        //    }
+        //}
         //public Thing Replies { get; set; }
         public string Subject { get; set; }
         public string SubredditName { get; set; }
@@ -64,11 +85,11 @@ namespace Reddit.Things.API
             Temp.Created = Json["created"].DoubleValue.ToDateTime();
             Temp.CreatedUTC = Json["created_utc"].DoubleValue.ToDateTime();
             Temp.RecipientName = Json["dest"].StringValue;
-            //Temp.FirstMessage = Thing.Get(Json["first_message"].StringValue);
+            Temp.FirstMessageId = Json["first_message"].StringValue.Remove(0 ,3);
             Temp.ID = Json["id"].StringValue;
             Temp.Kind = Kind.Message;
             Temp.New = Json["new"].BooleanValue;
-            Temp.Parent = Thing.Get(Json["parent_id"].StringValue);
+            Temp.ParentId = Json["parent_id"].StringValue.Remove(0, 3);
             Temp.Subject = Json["subject"].StringValue;
             Temp.SubredditName = Json["subreddit"].StringValue;
             Temp.WasComment = Json["was_comment"].BooleanValue;
