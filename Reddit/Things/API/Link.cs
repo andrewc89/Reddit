@@ -1,13 +1,12 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using SimpleJSON;
+using Reddit.Things.API.Enums;
+using Reddit.Extensions;
+
 namespace Reddit.Things.API
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Extensions;
-    using SimpleJSON;
-    using Things.API.Enums;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
@@ -27,7 +26,7 @@ namespace Reddit.Things.API
                 if (!IsSelf) throw new Exception(this.ToString() + " is not a self post!");
                 _SelfContent = value;
                 Edited = true;
-                string Response = Connection.Post("/api/editusertext", "text=" + value + "&thing_id=" + this.ToString());
+                string Response = Connection.Post("api/editusertext", "text=" + value + "&thing_id=" + this.ToString());
             } 
         }
         public int Likes { get; set; }
@@ -47,7 +46,7 @@ namespace Reddit.Things.API
             {
                 if (_Subreddit == null)
                 {
-                    string Response = Connection.Get("/r/" + SubredditName + ".json");
+                    string Response = Connection.Get("r/" + SubredditName + ".json");
                     _Subreddit = Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Subreddit;
@@ -71,7 +70,7 @@ namespace Reddit.Things.API
             {
                 if (_Author == null)
                 {
-                    string Response = Connection.Get("/user/" + AuthorName + "/about.json");
+                    string Response = Connection.Get("user/" + AuthorName + "/about.json");
                     _Author = User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Author;
@@ -114,7 +113,7 @@ namespace Reddit.Things.API
             {
                 throw new Exception("Can't apply SortBy.Best or SortBy.Old in this context");
             }
-            string Response = Connection.Get("/comments/" + ID + ".json", "sort=" + Sort.Arg);
+            string Response = Connection.Get("comments/" + ID + ".json", "sort=" + Sort.Arg);
             var Comments = new List<Comment>();
             foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)[1]["data"]["children"].ArrayValue)
             {
@@ -131,22 +130,18 @@ namespace Reddit.Things.API
                 .Append("thing_id=").Append(this.ToString())
                 .Append("&text=").Append(CommentMarkdown)
                 .ToString();
-            string Response = Connection.Post("/api/comment", PostData);
+            string Response = Connection.Post("api/comment", PostData);
             return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
         }
 
         public void EditContent (string Content)
         {
-            if (!IsSelf)
-            {
-                throw new Exception("This Link is not a self post so there is no SelfContent to edit.");
-            }
             this.SelfContent = Content;
         }
 
         public List<Link> OtherDiscussions ()
         {
-            string Response = Connection.Get("/api/info.json", "url=" + this.Url);
+            string Response = Connection.Get("api/info.json", "url=" + this.Url);
             var Links = new List<Link>();
             foreach (var Link in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
             {

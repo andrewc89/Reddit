@@ -21,7 +21,7 @@ namespace Reddit.Things.API.Meta
         public string DescriptionHtml { get; set; }
         public string DisplayName { get; set; }
         public SubredditHeader Header { get; set; }
-        public string Id { get; set; }
+        public string ID { get; set; }
         public Thing Thing { get; set; }
         public bool Over18 { get; set; }
         public string PublicDescription { get; set; }
@@ -34,7 +34,7 @@ namespace Reddit.Things.API.Meta
 
         #region Factory
 
-        public static SubredditMetaData Create (SimpleJSON.JObject Json)
+        internal static SubredditMetaData Create (SimpleJSON.JObject Json)
         {
             var Temp = new SubredditMetaData();
 
@@ -44,14 +44,15 @@ namespace Reddit.Things.API.Meta
             Temp.Description = Json["description"].StringValue;
             Temp.DescriptionHtml = Json["description_html"].StringValue;
             Temp.DisplayName = Json["display_name"].StringValue;
-
-            Temp.Header = new SubredditHeader();
-            Temp.Header.ImageUrl = Json["header_img"].StringValue;
-            Temp.Header.ImageWidth = Json["header_size"][0].IntValue;
-            Temp.Header.ImageHeight = Json["header_size"][1].IntValue;
-            Temp.Header.Title = Json["header_title"].StringValue;
-
-            Temp.Id = Json["id"].StringValue;
+            if (Json["header_size"].Count > 0)
+            {
+                Temp.Header = new SubredditHeader();
+                Temp.Header.ImageUrl = Json["header_img"].StringValue;
+                Temp.Header.ImageWidth = Json["header_size"][0].IntValue;
+                Temp.Header.ImageHeight = Json["header_size"][1].IntValue;
+                Temp.Header.Title = Json["header_title"].StringValue;
+            }
+            Temp.ID = Json["id"].StringValue;
             Temp.Thing = Thing.Get(Json["name"].StringValue);
             Temp.Over18 = Json["over18"].BooleanValue;
             Temp.PublicDescription = Json["public_description"].StringValue;

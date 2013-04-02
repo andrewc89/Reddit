@@ -1,11 +1,10 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Reddit.Extensions;
+
 namespace Reddit.Things.API
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Extensions;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
@@ -19,7 +18,7 @@ namespace Reddit.Things.API
 
         #region Properties
 
-        private string LinkId;
+        private string LinkID;
         internal Link _Link;
         public Link Link
         {
@@ -27,18 +26,29 @@ namespace Reddit.Things.API
             {
                 if (_Link == null)
                 {
-                    string Response = Connection.Get("/comments/" + LinkId + ".json");
-                    _Link = Link.Create(SimpleJSON.JSONDecoder.Decode(Response)[0]["data"]["children"][0]["data"]);
+                    string Response = Connection.Get("api/info.json", "id=" + LinkID);
+                    _Link = Link.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"][0]["data"]);
                 }
                 return _Link;
             }
         }
-        private string ParentId;
-        private Comment _Parent;
-        public Comment Parent
+        private Thing ParentThing;
+        private Thing _Parent;
+        public Thing Parent
         {
             get
             {
+                if (_Parent == null && ParentThing.Kind == Kind.Link)
+                {
+                    if (ParentThing.Kind == Kind.Link)
+                    {
+                        _Parent = Link;
+                    }
+                    else if (ParentThing.Kind == Kind.Comment)
+                    {
+
+                    }
+                }                
                 return _Parent;
             }
         }
@@ -50,7 +60,7 @@ namespace Reddit.Things.API
             {
                 if (_Subreddit == null)
                 {
-                    string Response = Connection.Get("/r/" + SubredditName + ".json");
+                    string Response = Connection.Get("r/" + SubredditName + ".json");
                     _Subreddit = Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Subreddit;
@@ -59,18 +69,8 @@ namespace Reddit.Things.API
 
         //public User BannedBy { get; set; }
         public int Likes { get; set; }
-        private List<Comment> _Comments;
-        public List<Comment> Comments
-        {
-            get
-            {
-                if (_Comments == null || _Comments.Count == 0)
-                {
-                    // load the comment's replies
-                }
-                return _Comments;
-            }
-        }
+        public List<Comment> Comments { get; set; }
+
         public int Gilded { get; set; }
         private string AuthorName;
         private User _Author;
@@ -80,7 +80,7 @@ namespace Reddit.Things.API
             {
                 if (_Author == null)
                 {
-                    string Response = Connection.Get("/user/" + AuthorName + "/about.json");
+                    string Response = Connection.Get("user/" + AuthorName + "/about.json");
                     _Author = User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Author;
@@ -95,7 +95,7 @@ namespace Reddit.Things.API
             {
                 _Content = value;
                 Edited = true;
-                string Response = Connection.Post("/api/editusertext", "text=" + value + "&thing_id=" + this.ToString());
+                string Response = Connection.Post("api/editusertext", "text=" + value + "&thing_id=" + this.ToString());
                 var Json = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"];
                 this.ContentHtml = Json["contentHTML"].StringValue;
             }
@@ -120,7 +120,7 @@ namespace Reddit.Things.API
                 .Append("thing_id=").Append(this.ToString())
                 .Append("&text=").Append(CommentMarkdown)
                 .ToString();
-            string Response = Connection.Post("/api/comment", PostData);
+            string Response = Connection.Post("api/comment", PostData);
             return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
         }
 
@@ -134,7 +134,7 @@ namespace Reddit.Things.API
             string PostData = new StringBuilder()
                 .Append("id=").Append(this.ToString())
                 .ToString();
-            string Response = Connection.Post("http://reddit.com/api/del", PostData);
+            string Response = Connection.Post("api/del", PostData);
             return true;
         }
 
@@ -146,24 +146,24 @@ namespace Reddit.Things.API
         {
             var Temp = new Comment();
 
-            Temp.LinkId = Json["link_id"].StringValue.Remove(0, 3);
+            Temp.LinkID = Json["link_id"].StringValue.Remove(0, 3);
             Temp.ID = Json["id"].StringValue;
             Temp.Kind = Kind.Comment;            
             //Temp.BannedBy = Json["banned_by"];            
             Temp.Likes = Json["likes"].IntValue;
-            Temp._Comments = new List<Comment>();
+            Temp.Comments = new List<Comment>();
             if (Json["replies"].ObjectValue != null && Json["replies"]["data"].ObjectValue != null)
             {
                 foreach (var Reply in Json["replies"]["data"]["children"].ArrayValue)
                 {
                     var ReplyObj = Comment.Create(Reply["data"]);
                     ReplyObj._Parent = Temp;
-                    Temp._Comments.Add(ReplyObj);
+                    Temp.Comments.Add(ReplyObj);
                 }
             }
             Temp.Gilded = Json["gilded"].IntValue;
             Temp.AuthorName = Json["author"].StringValue;
-            Temp.ParentId = Json["parent_id"].StringValue;
+            Temp.ParentThing = Thing.Get(Json["parent_id"].StringValue);
             //Temp.ApprovedBy = Json["approved_by"];
             Temp._Content = Json["body"].StringValue;
             Temp.Edited = Json["edited"].BooleanValue;

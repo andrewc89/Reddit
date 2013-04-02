@@ -1,9 +1,8 @@
-﻿
+﻿using System;
+using Reddit.Extensions;
+
 namespace Reddit.Things.API
 {
-    using System;
-    using Extensions;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
@@ -25,7 +24,7 @@ namespace Reddit.Things.API
             {
                 if (_Author == null)
                 {
-                    string Response = Connection.Get("/user/" + AuthorName + "/about.json");
+                    string Response = Connection.Get("user/" + AuthorName + "/about.json");
                     _Author = User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Author;

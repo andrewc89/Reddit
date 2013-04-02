@@ -1,11 +1,10 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using Reddit.Extensions;
+using SimpleJSON;
+
 namespace Reddit.Things.API
 {
-    using System;
-    using System.Collections.Generic;
-    using Extensions;
-    using SimpleJSON;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
@@ -43,7 +42,7 @@ namespace Reddit.Things.API
             {
                 messages = Enums.Messages.Inbox;
             }
-            string Response = Connection.Get("/message/" + messages.Arg + ".json");
+            string Response = Connection.Get("message/" + messages.Arg + ".json");
             var Messages = new List<Message>();
             foreach (var Message in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
             {
@@ -82,7 +81,12 @@ namespace Reddit.Things.API
 
         internal static Me Create (string Input)
         {
-            return Me.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
+            var me = SimpleJSON.JSONDecoder.Decode(Input)["data"];
+            if (me != null)
+            {
+                return Me.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
+            }
+            else return null;
         }
 
         #endregion

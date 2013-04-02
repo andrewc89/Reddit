@@ -13,7 +13,7 @@ namespace Reddit.Things.API.Enums
         public static readonly From ThisWeek = new From("week");
         public static readonly From Today = new From("day");
         public static readonly From ThisHour = new From("hour");
-        public static readonly From Forever = new From("all");
+        public static readonly From AllTime = new From("all");
 
         private From (string Name)
         {

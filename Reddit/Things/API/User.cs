@@ -1,11 +1,10 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using Reddit.Extensions;
+using Reddit.Things.API.Enums;
+
 namespace Reddit.Things.API
 {
-    using System;
-    using System.Collections.Generic;
-    using Extensions;
-    using Things.API.Enums;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
@@ -54,13 +53,13 @@ namespace Reddit.Things.API
             }
             if (From == null)
             {
-                From = Enums.From.Forever;
+                From = Enums.From.AllTime;
             }
             if (Sort == SortBy.Best || Sort == SortBy.Old)
             {
                 throw new Exception("Can't apply SortBy.Best or SortBy.Old in this context");
             }
-            string Response = Connection.Get("/user/" + Name + "/comments.json", "sort=" + Sort.Arg + "&t=" + From.Arg);
+            string Response = Connection.Get("user/" + Name + "/comments.json", "sort=" + Sort.Arg + "&t=" + From.Arg);
             var Comments = new List<Comment>();
             foreach (var Comment in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
             {

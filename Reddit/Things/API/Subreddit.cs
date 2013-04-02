@@ -1,10 +1,10 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Reddit.Exceptions;
+
 namespace Reddit.Things.API
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
@@ -33,7 +33,7 @@ namespace Reddit.Things.API
             {
                 if (_MetaData == null)
                 {
-                    string Response = Connection.Get("/r/" + Name + "/about.json");
+                    string Response = Connection.Get("r/" + Name + "/about.json");
                     _MetaData = Meta.SubredditMetaData.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _MetaData;
@@ -68,9 +68,16 @@ namespace Reddit.Things.API
 
         private Thing Post (string PostData)
         {
-            string Response = Connection.Post("/api/submit", PostData);
-            string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
-            return Thing.Get(Link);
+            string Response = Connection.Post("api/submit", PostData);
+            try
+            {
+                string Link = SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["name"].StringValue;
+                return Thing.Get(Link);
+            }
+            catch (KeyNotFoundException e)
+            {
+                throw new NotEnoughKarmaException("Your account needs more karma to avoid captchas when posting. See here: http://stackoverflow.com/a/11408092/1299363");
+            }            
         }
 
         #endregion
@@ -104,7 +111,7 @@ namespace Reddit.Things.API
             {
                 From = Enums.From.Today;
             }
-            if (From == Enums.From.Forever)
+            if (From == Enums.From.AllTime)
             {
                 throw new Exception("Can't apply From.Forever in this context");
             }
@@ -118,7 +125,7 @@ namespace Reddit.Things.API
             {
                 From = Enums.From.Today;
             }
-            if (From == Enums.From.Forever)
+            if (From == Enums.From.AllTime)
             {
                 throw new Exception("Can't apply From.Forever in this context");
             }
@@ -126,13 +133,9 @@ namespace Reddit.Things.API
             return Sorted("controversial", Args);
         }
 
-        #endregion        
-
-        #region Private Functions
-
         private List<Link> Sorted (string Sort, string Args)
         {
-            string Response = Connection.Get("/r/" + Name + "/" + Sort + "/.json", Args);
+            string Response = Connection.Get("r/" + Name + "/" + Sort + "/.json", Args);
             var Links = new List<Link>();
             foreach (var Link in SimpleJSON.JSONDecoder.Decode(Response)["data"]["children"].ArrayValue)
             {

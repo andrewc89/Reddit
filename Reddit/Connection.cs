@@ -1,29 +1,28 @@
-﻿
+﻿using System.Text;
+using System.Net;
+using System.IO;
+using Reddit.Exceptions;
+
 namespace Reddit
 {
-    using System.Text;
-    using System.Net;
-    using System.IO;
-    using Exceptions;
-
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public static class Connection
+    internal static class Connection
     {
         #region Properties
 
-        public static string UserAgent { get; set; }
+        internal static string UserAgent { get; set; }
 
-        public static string Cookie { get; set; }
+        internal static string Cookie { get; set; }
 
-        public static string ModHash { get; set; }
+        internal static string ModHash { get; set; }
 
         #endregion
 
         #region Logged in?
 
-        public static bool LoggedIn ()
+        internal static bool LoggedIn ()
         {
             return !string.IsNullOrEmpty(Cookie) && !string.IsNullOrEmpty(ModHash);
         }
@@ -32,14 +31,14 @@ namespace Reddit
 
         #region Get
 
-        public static string Get (string Url, string Args = "")
+        internal static string Get (string Url, string Args = "")
         {
             if (!CheckProperties()) throw new NotLoggedInException("you need to: var r = new Reddit(myUserAgent); r.Login(Username, Password);");
             if (!string.IsNullOrEmpty(Args))
             {
                 Url = Url + "?" + Args;
             }
-            var Request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com" + Url);
+            var Request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/" + Url);
             Request.UserAgent = UserAgent;
             Request.CookieContainer = new CookieContainer();
             Request.CookieContainer.Add(Request.RequestUri, new CookieCollection() { new Cookie("reddit_session", Cookie.Replace(",", "%2c")), new Cookie("uh", ModHash) });
@@ -55,10 +54,10 @@ namespace Reddit
 
         #region Post
 
-        public static string Post (string Url, string Post)
+        internal static string Post (string Url, string Post)
         {
-            if (!Url.Equals("/api/login") && !CheckProperties()) throw new NotLoggedInException("you need to: var r = new Reddit(myUserAgent); r.Login(Username, Password);");
-            var Request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com" + Url);
+            if (!Url.Equals("api/login") && !CheckProperties()) throw new NotLoggedInException("you need to: var r = new Reddit(myUserAgent); r.Login(Username, Password);");
+            var Request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/" + Url);
 
             string _Modhash = "";
             if (!string.IsNullOrEmpty(Cookie))

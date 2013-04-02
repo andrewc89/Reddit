@@ -1,9 +1,8 @@
-﻿
-namespace Reddit.Tests
-{
-    using NUnit.Framework;
-    using Things;
+﻿using NUnit.Framework;
+using Reddit.Things;
 
+namespace Reddit.Tests.Things
+{
     [TestFixture]
     public class KindTests
     {
