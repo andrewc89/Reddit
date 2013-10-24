@@ -1,12 +1,11 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 using Reddit.Things;
 
 namespace Reddit.Tests.Things
 {
-    [TestFixture]
     public class ThingTests
     {
-        [Test]
+        [Fact]
         public void GetTest ()
         {
             var expectedThing = new Thing("abc123", Kind.Link);
@@ -14,11 +13,11 @@ namespace Reddit.Tests.Things
 
             var thing = Thing.Get(inputString);
 
-            Assert.That(thing.Kind, Is.EqualTo(expectedThing.Kind));
-            Assert.That(thing.ID, Is.EqualTo(expectedThing.ID));
+            Assert.Equal(thing.Kind, expectedThing.Kind);
+            Assert.Equal(thing.ID, expectedThing.ID);
         }
 
-        [Test]
+        [Fact]
         public void CorrectToString ()
         {
             string expectedString = "t1_a1d3f2";
@@ -26,7 +25,7 @@ namespace Reddit.Tests.Things
 
             string output = thing.ToString();
 
-            Assert.That(output, Is.EqualTo(expectedString));
+            Assert.Equal(output, expectedString);
         }
     }
 }

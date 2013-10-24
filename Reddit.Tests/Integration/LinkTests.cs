@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
+using Xunit;
 using Reddit.Things.API;
 using Reddit.Things.API.Enums;
 using Reddit.Things;
 
 namespace Reddit.Tests.Integration
 {
-    [TestFixture]
-    class LinkTests
+    public class LinkTests
     {
         private Link _link;
 
@@ -19,50 +18,50 @@ namespace Reddit.Tests.Integration
             _link = Constants.GetLink();
         }
 
-        [Test]
+        [Fact]
         public void GetCommentsTest ()
         {
             var actual = _link.GetComments();
 
-            Assert.That(actual.Count > 0);
+            Assert.True(actual.Count > 0);
         }
 
-        [Test]
+        [Fact]
         public void CommentTest ()
         {
             var actual = _link.Comment("testing from Reddit.Tests.Integration.LinkTests");
 
-            Assert.That(actual.Kind, Is.EqualTo(Kind.Comment));
+            Assert.Equal(actual.Kind, Kind.Comment);
         }
 
-        [Test]
+        [Fact]
         public void EditContentTest ()
         {
             string newContent = "updating content from LinkTests at " + DateTime.Now.ToString();
             
             _link.EditContent(newContent);
 
-            Assert.That(_link.SelfContent, Is.EqualTo(newContent));
+            Assert.Equal(_link.SelfContent,newContent);
         }
 
-        [Test]
+        [Fact]
         public void GetAuthorTest ()
         {
             var actual = _link.Author;
 
-            Assert.That(actual.Kind, Is.EqualTo(Kind.Account));
-            Assert.That(actual.ID, Is.EqualTo(Constants.UserID));
-            Assert.That(actual.Name, Is.EqualTo(Constants.UserName));   
+            Assert.Equal(actual.Kind, Kind.Account);
+            Assert.Equal(actual.ID, Constants.UserID);
+            Assert.Equal(actual.Name, Constants.UserName);   
         }
 
-        [Test]
+        [Fact]
         public void GetSubredditTest ()
         {
             var actual = _link.Subreddit;
 
-            Assert.That(actual.Kind, Is.EqualTo(Kind.Subreddit));
-            Assert.That(actual.ID, Is.EqualTo(Constants.SubredditID));
-            Assert.That(actual.Links.Exists(x => x.ID == Constants.LinkID));
+            Assert.Equal(actual.Kind,Kind.Subreddit);
+            Assert.Equal(actual.ID, Constants.SubredditID);
+            Assert.True(actual.Links.Exists(x => x.ID == Constants.LinkID));
         }
     }
 }

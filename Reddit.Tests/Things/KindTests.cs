@@ -1,12 +1,11 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 using Reddit.Things;
 
 namespace Reddit.Tests.Things
 {
-    [TestFixture]
     public class KindTests
     {
-        [Test]
+        [Fact]
         public void GetTest ()
         {
             string comment = "t3";
@@ -14,7 +13,7 @@ namespace Reddit.Tests.Things
 
             var kind = Kind.Get(comment);
 
-            Assert.That(kind, Is.EqualTo(expectedKind));
+            Assert.Equal(kind, expectedKind);
         }
     }
 }

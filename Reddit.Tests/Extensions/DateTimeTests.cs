@@ -1,13 +1,12 @@
 ﻿using System;
-using NUnit.Framework;
+using Xunit;
 using Reddit.Extensions;
 
 namespace Reddit.Tests.Extensions
 {
-    [TestFixture]
-    class DateTimeTests
+    public class DateTimeTests
     {
-        [Test]
+        [Fact]
         public void ConversionTest ()
         {
             double inputDate = 1364913850;
@@ -15,7 +14,7 @@ namespace Reddit.Tests.Extensions
 
             var actualDateTime = inputDate.ToDateTime().ToUniversalTime();
 
-            Assert.That(actualDateTime, Is.EqualTo(expectedDateTime));
+            Assert.Equal(actualDateTime, expectedDateTime);
         }
     }
 }
