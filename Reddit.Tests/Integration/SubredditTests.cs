@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xunit;
+﻿using Reddit.Things;
 using Reddit.Things.API;
-using Reddit.Things;
+using Xunit;
 
 namespace Reddit.Tests.Integration
 {
@@ -12,25 +8,25 @@ namespace Reddit.Tests.Integration
     {
         private Subreddit _subreddit;
 
-        public SubredditTests ()
+        public SubredditTests()
         {
             var reddit = Constants.GetReddit();
             _subreddit = Constants.GetSubreddit();
         }
 
         [Fact]
-        public void PostSelfTest ()
+        public void PostSelfTest()
         {
             string title = "testing from Reddit.Tests.Integration.SubredditTests";
             string body = "PostSelfTest";
-            
+
             var actual = _subreddit.PostSelf(title, body);
 
             Assert.Equal(actual.Kind, Kind.Link);
         }
 
         [Fact]
-        public void PostLinkTest ()
+        public void PostLinkTest()
         {
             string title = "Reddit API wrapper in C#";
 
@@ -40,12 +36,12 @@ namespace Reddit.Tests.Integration
         }
 
         [Fact]
-        public void SubredditMetaTest ()
+        public void SubredditMetaTest()
         {
             var actual = _subreddit.MetaData;
 
             Assert.Equal(actual.DisplayName, "testjswrapper");
-            Assert.Equal(actual.ID, Constants.SubredditID);            
+            Assert.Equal(actual.ID, Constants.SubredditID);
         }
     }
 }

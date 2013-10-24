@@ -1,8 +1,7 @@
-﻿
-namespace Reddit.Things
+﻿namespace Reddit.Things
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public sealed class Kind
     {
@@ -15,32 +14,37 @@ namespace Reddit.Things
         public static readonly Kind Message = new Kind(4, "Message");
         public static readonly Kind Subreddit = new Kind(5, "Subreddit");
 
-        private Kind (int ID, string Name)
+        private Kind(int ID, string Name)
         {
             this.ID = ID;
             this.Name = Name;
         }
 
-        public static Kind Get (string Kind)
+        public static Kind Get(string Kind)
         {
             switch (Kind)
             {
                 case "t1":
                     return Comment;
+
                 case "t2":
                     return Account;
+
                 case "t3":
                     return Link;
+
                 case "t4":
                     return Message;
+
                 case "t5":
                     return Subreddit;
+
                 default:
                     return null;
             }
         }
 
-        public override string ToString ()
+        public override string ToString()
         {
             return "t" + this.ID.ToString();
         }

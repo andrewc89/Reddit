@@ -1,6 +1,5 @@
-﻿
-namespace Reddit.Things.API.Enums
-{    
+﻿namespace Reddit.Things.API.Enums
+{
     public sealed class Messages
     {
         public readonly string Arg;
@@ -9,7 +8,7 @@ namespace Reddit.Things.API.Enums
         public static readonly Messages New = new Messages("unread");
         public static readonly Messages Sent = new Messages("sent");
 
-        private Messages (string Messages)
+        private Messages(string Messages)
         {
             this.Arg = Messages;
         }

@@ -1,40 +1,53 @@
-﻿
-namespace Reddit.Things.API.Meta
+﻿namespace Reddit.Things.API.Meta
 {
-    using System;
     using Extensions;
+    using System;
 
     public class SubredditMetaData
     {
         #region Constructor
 
-        public SubredditMetaData () { }
+        public SubredditMetaData()
+        {
+        }
 
         #endregion
 
         #region Properties
 
         public int AccountsActive { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime CreatedUTC { get; set; }
-        public string Description { get; set; }
-        public string DescriptionHtml { get; set; }
-        public string DisplayName { get; set; }
-        public SubredditHeader Header { get; set; }
-        public string ID { get; set; }
-        public Thing Thing { get; set; }
-        public bool Over18 { get; set; }
-        public string PublicDescription { get; set; }
-        public long Subscribers { get; set; }
-        public string Title { get; set; }
-        public string Url { get; set; }
 
+        public DateTime Created { get; set; }
+
+        public DateTime CreatedUTC { get; set; }
+
+        public string Description { get; set; }
+
+        public string DescriptionHtml { get; set; }
+
+        public string DisplayName { get; set; }
+
+        public SubredditHeader Header { get; set; }
+
+        public string ID { get; set; }
+
+        public Thing Thing { get; set; }
+
+        public bool Over18 { get; set; }
+
+        public string PublicDescription { get; set; }
+
+        public long Subscribers { get; set; }
+
+        public string Title { get; set; }
+
+        public string Url { get; set; }
 
         #endregion
 
         #region Factory
 
-        internal static SubredditMetaData Create (SimpleJSON.JObject Json)
+        internal static SubredditMetaData Create(SimpleJSON.JObject Json)
         {
             var Temp = new SubredditMetaData();
 

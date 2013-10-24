@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Reddit.Extensions;
+﻿using Reddit.Extensions;
 using SimpleJSON;
+using System;
+using System.Collections.Generic;
 
 namespace Reddit.Things.API
 {
@@ -12,7 +12,7 @@ namespace Reddit.Things.API
     {
         #region Constructor
 
-        public Me () 
+        public Me()
         {
             this.Kind = Kind.Account;
         }
@@ -22,21 +22,30 @@ namespace Reddit.Things.API
         #region Properties
 
         public string ModHash { get; set; }
+
         public string Name { get; set; }
+
         public bool HasMail { get; set; }
+
         public bool HasModMail { get; set; }
-        public DateTime Created { get; set; }        
+
+        public DateTime Created { get; set; }
+
         public DateTime CreatedUTC { get; set; }
+
         public long LinkKarma { get; set; }
+
         public long CommentKarma { get; set; }
+
         public bool IsGold { get; set; }
+
         public bool IsMod { get; set; }
 
         #endregion
 
         #region Public Functions
 
-        public List<Message> Mail (Enums.Messages messages = null)
+        public List<Message> Mail(Enums.Messages messages = null)
         {
             if (messages == null)
             {
@@ -56,9 +65,9 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        internal static Me Create (JObject Json)
+        internal static Me Create(JObject Json)
         {
-            var Temp = new Me();            
+            var Temp = new Me();
 
             Temp.ID = Json["id"].StringValue;
             Temp.ModHash = Json["modhash"].StringValue;
@@ -74,12 +83,12 @@ namespace Reddit.Things.API
             Temp.CommentKarma = Json["comment_karma"].LongValue;
 
             Temp.IsGold = Json["is_gold"].BooleanValue;
-            Temp.IsMod = Json["is_mod"].BooleanValue;           
+            Temp.IsMod = Json["is_mod"].BooleanValue;
 
             return Temp;
         }
 
-        internal static Me Create (string Input)
+        internal static Me Create(string Input)
         {
             var me = SimpleJSON.JSONDecoder.Decode(Input)["data"];
             if (me != null)

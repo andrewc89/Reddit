@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Reddit.Extensions;
+using Reddit.Things.API.Enums;
+using SimpleJSON;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using SimpleJSON;
-using Reddit.Things.API.Enums;
-using Reddit.Extensions;
 
 namespace Reddit.Things.API
 {
@@ -15,34 +15,53 @@ namespace Reddit.Things.API
         #region Properties
 
         public string Domain { get; set; }
+
         public Thing BannedBy { get; set; }
-        public string MediaEmbed { get; set; }        
+
+        public string MediaEmbed { get; set; }
+
         public string SelfContentHtml { get; set; }
+
         private string _SelfContent;
-        public string SelfContent { 
-            get { return _SelfContent; } 
-            set 
+
+        public string SelfContent
+        {
+            get { return _SelfContent; }
+            set
             {
                 if (!IsSelf) throw new Exception(this.ToString() + " is not a self post!");
                 _SelfContent = value;
                 Edited = true;
                 string Response = Connection.Post("api/editusertext", "text=" + value + "&thing_id=" + this.ToString());
-            } 
+            }
         }
+
         public int Likes { get; set; }
+
         public string LinkFlairText { get; set; }
+
         public bool Clicked { get; set; }
+
         public string Title { get; set; }
+
         public int NumComments { get; set; }
+
         public int Score { get; set; }
+
         public Thing ApprovedBy { get; set; }
+
         public bool Over18 { get; set; }
+
         public bool Hidden { get; set; }
+
         public string Thumbnail { get; set; }
+
         private string SubredditName;
         private Subreddit _Subreddit;
-        public Subreddit Subreddit { 
-            get 
+
+        public Subreddit Subreddit
+        {
+            get
             {
                 if (_Subreddit == null)
                 {
@@ -50,20 +69,33 @@ namespace Reddit.Things.API
                     _Subreddit = Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
                 }
                 return _Subreddit;
-            }                       
+            }
         }
+
         public bool Edited { get; set; }
+
         public string LinkFlairCSSClass { get; set; }
+
         public string AuthorFlairCSSClass { get; set; }
+
         public int Downvotes { get; set; }
+
         public bool Saved { get; set; }
+
         public bool IsSelf { get; set; }
+
         public string Permalink { get; set; }
+
         public DateTime Created { get; set; }
+
         public string Url { get; set; }
+
         public string AuthorFlairText { get; set; }
+
         public string AuthorName { get; set; }
+
         private User _Author;
+
         public User Author
         {
             get
@@ -76,11 +108,17 @@ namespace Reddit.Things.API
                 return _Author;
             }
         }
+
         public DateTime CreatedUTC { get; set; }
+
         public string Media { get; set; }
+
         public string NumReports { get; set; }
+
         public int Upvotes { get; set; }
+
         private List<Comment> _Comments;
+
         public List<Comment> Comments
         {
             get
@@ -92,14 +130,14 @@ namespace Reddit.Things.API
                 return _Comments;
             }
             set { _Comments = value; }
-        }        
+        }
 
         #endregion
 
         #region Functions
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Sort">one of: SortBy.Hot, SortBy.New, SortBy.Old, SortBy.Top, SortBy.Controversial</param>
         /// <returns></returns>
@@ -124,7 +162,7 @@ namespace Reddit.Things.API
             return Comments;
         }
 
-        public Thing Comment (string CommentMarkdown)
+        public Thing Comment(string CommentMarkdown)
         {
             string PostData = new StringBuilder()
                 .Append("thing_id=").Append(this.ToString())
@@ -134,12 +172,12 @@ namespace Reddit.Things.API
             return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
         }
 
-        public void EditContent (string Content)
+        public void EditContent(string Content)
         {
             this.SelfContent = Content;
         }
 
-        public List<Link> OtherDiscussions ()
+        public List<Link> OtherDiscussions()
         {
             string Response = Connection.Get("api/info.json", "url=" + this.Url);
             var Links = new List<Link>();
@@ -154,9 +192,9 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        internal static Link Create (JObject Json)
+        internal static Link Create(JObject Json)
         {
-            var Temp = new Link();            
+            var Temp = new Link();
 
             Temp.ID = Json["id"].StringValue;
             Temp.Kind = Kind.Link;
@@ -167,7 +205,7 @@ namespace Reddit.Things.API
             Temp.SelfContentHtml = Json["selftext_html"].StringValue;
             Temp._SelfContent = Json["selftext"].StringValue;
             //Temp.Likes = Json["likes"].IntValue;
-            Temp.LinkFlairText = Json["link_flair_text"].StringValue;            
+            Temp.LinkFlairText = Json["link_flair_text"].StringValue;
             Temp.Clicked = Json["clicked"].BooleanValue;
             Temp.Title = Json["title"].StringValue;
             Temp.NumComments = Json["num_comments"].IntValue;
@@ -175,7 +213,7 @@ namespace Reddit.Things.API
             //Temp.ApprovedBy = null;
             Temp.Over18 = Json["over_18"].BooleanValue;
             Temp.Hidden = Json["hidden"].BooleanValue;
-            Temp.Thumbnail = Json["thumbnail"].StringValue;            
+            Temp.Thumbnail = Json["thumbnail"].StringValue;
             Temp.Edited = Json["edited"].BooleanValue;
             Temp.LinkFlairCSSClass = Json["link_flair_css_class"].StringValue;
             Temp.AuthorFlairCSSClass = Json["author_flair_css_class"].StringValue;
@@ -195,7 +233,7 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        internal static Link Create (string Input)
+        internal static Link Create(string Input)
         {
             return Link.Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]["children"][0]);
         }

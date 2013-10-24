@@ -1,23 +1,25 @@
-﻿
-namespace Reddit.Things
+﻿namespace Reddit.Things
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class Thing
     {
-        public Thing () { }
+        public Thing()
+        {
+        }
 
-        public Thing (string ID, Kind kind)
+        public Thing(string ID, Kind kind)
         {
             this.ID = ID;
             this.Kind = kind;
         }
 
         public string ID { get; set; }
-        public Kind Kind { get; set; }        
 
-        public static Thing Get (string Thing)
+        public Kind Kind { get; set; }
+
+        public static Thing Get(string Thing)
         {
             if (string.IsNullOrEmpty(Thing))
             {
@@ -31,7 +33,7 @@ namespace Reddit.Things
             };
         }
 
-        public override string ToString ()
+        public override string ToString()
         {
             return Kind.ToString() + "_" + ID;
         }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Reddit.Things;
 using Xunit;
-using Reddit.Things.API;
-using Reddit.Things;
 
 namespace Reddit.Tests.Integration
 {
@@ -12,13 +7,13 @@ namespace Reddit.Tests.Integration
     {
         private Reddit _reddit;
 
-        public RedditTests ()
+        public RedditTests()
         {
             _reddit = Constants.GetReddit();
         }
 
         [Fact]
-        public void LoginTest ()
+        public void LoginTest()
         {
             var actual = _reddit.Login(Constants.UserName, Constants.Password);
 
@@ -28,7 +23,7 @@ namespace Reddit.Tests.Integration
         }
 
         [Fact]
-        public void rTest ()
+        public void rTest()
         {
             string subredditName = "testjswrapper";
 
@@ -39,7 +34,7 @@ namespace Reddit.Tests.Integration
         }
 
         [Fact]
-        public void GetUserTest ()
+        public void GetUserTest()
         {
             var actual = _reddit.GetUser(Constants.UserName);
 

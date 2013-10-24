@@ -1,12 +1,12 @@
-﻿using Xunit;
-using Reddit.Things;
+﻿using Reddit.Things;
+using Xunit;
 
 namespace Reddit.Tests.Things
 {
     public class ThingTests
     {
         [Fact]
-        public void GetTest ()
+        public void GetTest()
         {
             var expectedThing = new Thing("abc123", Kind.Link);
             string inputString = "t3_abc123";
@@ -18,7 +18,7 @@ namespace Reddit.Tests.Things
         }
 
         [Fact]
-        public void CorrectToString ()
+        public void CorrectToString()
         {
             string expectedString = "t1_a1d3f2";
             var thing = new Thing("a1d3f2", Kind.Comment);

@@ -1,5 +1,5 @@
-﻿using System;
-using Reddit.Extensions;
+﻿using Reddit.Extensions;
+using System;
 
 namespace Reddit.Things.API
 {
@@ -10,7 +10,9 @@ namespace Reddit.Things.API
     {
         #region Constructor
 
-        public Message () { }
+        public Message()
+        {
+        }
 
         #endregion
 
@@ -18,6 +20,7 @@ namespace Reddit.Things.API
 
         private string AuthorName;
         private User _Author;
+
         public User Author
         {
             get
@@ -30,13 +33,21 @@ namespace Reddit.Things.API
                 return _Author;
             }
         }
+
         public string Body { get; set; }
+
         public string BodyHtml { get; set; }
+
         public string ContextUrl { get; set; }
+
         public DateTime Created { get; set; }
+
         public DateTime CreatedUTC { get; set; }
+
         public string RecipientName { get; set; }
+
         private string FirstMessageId;
+
         //private Message _FirstMessage;
         //public Message FirstMessage
         //{
@@ -44,13 +55,14 @@ namespace Reddit.Things.API
         //    {
         //        if (_FirstMessage == null)
         //        {
-
         //        }
         //        return _FirstMessage;
         //    }
         //}
         public bool New { get; set; }
+
         private string ParentId;
+
         //private Message _Parent;
         //public Message Parent
         //{
@@ -65,14 +77,16 @@ namespace Reddit.Things.API
         //}
         //public Thing Replies { get; set; }
         public string Subject { get; set; }
+
         public string SubredditName { get; set; }
+
         public bool WasComment { get; set; }
 
         #endregion
 
         #region Factory
 
-        internal static Message Create (SimpleJSON.JObject Json)
+        internal static Message Create(SimpleJSON.JObject Json)
         {
             Json = Json["data"];
             var Temp = new Message();
@@ -84,7 +98,7 @@ namespace Reddit.Things.API
             Temp.Created = Json["created"].DoubleValue.ToDateTime();
             Temp.CreatedUTC = Json["created_utc"].DoubleValue.ToDateTime();
             Temp.RecipientName = Json["dest"].StringValue;
-            Temp.FirstMessageId = Json["first_message"].StringValue.Remove(0 ,3);
+            Temp.FirstMessageId = Json["first_message"].StringValue.Remove(0, 3);
             Temp.ID = Json["id"].StringValue;
             Temp.Kind = Kind.Message;
             Temp.New = Json["new"].BooleanValue;

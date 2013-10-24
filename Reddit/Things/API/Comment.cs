@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Reddit.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Reddit.Extensions;
 
 namespace Reddit.Things.API
 {
@@ -12,7 +12,9 @@ namespace Reddit.Things.API
     {
         #region Constructor
 
-        public Comment () { }
+        public Comment()
+        {
+        }
 
         #endregion
 
@@ -20,6 +22,7 @@ namespace Reddit.Things.API
 
         private string LinkID;
         internal Link _Link;
+
         public Link Link
         {
             get
@@ -32,8 +35,10 @@ namespace Reddit.Things.API
                 return _Link;
             }
         }
+
         private Thing ParentThing;
         private Thing _Parent;
+
         public Thing Parent
         {
             get
@@ -46,17 +51,18 @@ namespace Reddit.Things.API
                     }
                     else if (ParentThing.Kind == Kind.Comment)
                     {
-
                     }
-                }                
+                }
                 return _Parent;
             }
         }
+
         private string SubredditName;
         private Subreddit _Subreddit;
-        public Subreddit Subreddit 
+
+        public Subreddit Subreddit
         {
-            get 
+            get
             {
                 if (_Subreddit == null)
                 {
@@ -69,11 +75,14 @@ namespace Reddit.Things.API
 
         //public User BannedBy { get; set; }
         public int Likes { get; set; }
+
         public List<Comment> Comments { get; set; }
 
         public int Gilded { get; set; }
+
         private string AuthorName;
         private User _Author;
+
         public User Author
         {
             get
@@ -86,8 +95,10 @@ namespace Reddit.Things.API
                 return _Author;
             }
         }
+
         //public User ApprovedBy { get; set; }
         private string _Content;
+
         public string Content
         {
             get { return _Content; }
@@ -100,13 +111,21 @@ namespace Reddit.Things.API
                 this.ContentHtml = Json["contentHTML"].StringValue;
             }
         }
+
         public string ContentHtml { get; set; }
+
         public bool Edited { get; set; }
+
         public string AuthorFlairText { get; set; }
+
         public string AuthorFlairCSSClass { get; set; }
-        public int Downvotes { get; set; }        
+
+        public int Downvotes { get; set; }
+
         public DateTime Created { get; set; }
+
         public DateTime CreatedUTC { get; set; }
+
         //public int NumReports { get; set; }
         public int Upvotes { get; set; }
 
@@ -114,7 +133,7 @@ namespace Reddit.Things.API
 
         #region Functions
 
-        public Thing Reply (string CommentMarkdown)
+        public Thing Reply(string CommentMarkdown)
         {
             string PostData = new StringBuilder()
                 .Append("thing_id=").Append(this.ToString())
@@ -124,12 +143,12 @@ namespace Reddit.Things.API
             return Thing.Get(SimpleJSON.JSONDecoder.Decode(Response)["json"]["data"]["things"].ArrayValue[0]["data"]["id"].StringValue);
         }
 
-        public void Edit (string Content)
+        public void Edit(string Content)
         {
             this.Content = Content;
         }
 
-        public bool Delete ()
+        public bool Delete()
         {
             string PostData = new StringBuilder()
                 .Append("id=").Append(this.ToString())
@@ -142,14 +161,14 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        internal static Comment Create (SimpleJSON.JObject Json)
+        internal static Comment Create(SimpleJSON.JObject Json)
         {
             var Temp = new Comment();
 
             Temp.LinkID = Json["link_id"].StringValue.Remove(0, 3);
             Temp.ID = Json["id"].StringValue;
-            Temp.Kind = Kind.Comment;            
-            //Temp.BannedBy = Json["banned_by"];            
+            Temp.Kind = Kind.Comment;
+            //Temp.BannedBy = Json["banned_by"];
             Temp.Likes = Json["likes"].IntValue;
             Temp.Comments = new List<Comment>();
             if (Json["replies"].ObjectValue != null && Json["replies"]["data"].ObjectValue != null)
@@ -180,7 +199,7 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        internal static Comment Create (string Input)
+        internal static Comment Create(string Input)
         {
             return Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
         }

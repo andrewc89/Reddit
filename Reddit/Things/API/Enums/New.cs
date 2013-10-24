@@ -1,5 +1,4 @@
-﻿
-namespace Reddit.Things.API.Enums
+﻿namespace Reddit.Things.API.Enums
 {
     /// <summary>
     /// TODO: Update summary.
@@ -11,7 +10,7 @@ namespace Reddit.Things.API.Enums
         public static readonly Sort New = new Sort("new");
         public static readonly Sort Rising = new Sort("rising");
 
-        private Sort (string Name)
+        private Sort(string Name)
         {
             this.Arg = Name;
         }

@@ -1,5 +1,4 @@
-﻿
-namespace Reddit.Things.API.Enums
+﻿namespace Reddit.Things.API.Enums
 {
     /// <summary>
     /// TODO: Update summary.
@@ -15,7 +14,7 @@ namespace Reddit.Things.API.Enums
         public static readonly From ThisHour = new From("hour");
         public static readonly From AllTime = new From("all");
 
-        private From (string Name)
+        private From(string Name)
         {
             this.Arg = Name;
         }

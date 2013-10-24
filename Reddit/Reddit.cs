@@ -1,5 +1,5 @@
-﻿using Reddit.Things.API;
-using Reddit.Exceptions;
+﻿using Reddit.Exceptions;
+using Reddit.Things.API;
 
 namespace Reddit
 {
@@ -11,7 +11,7 @@ namespace Reddit
         /// new Reddit wrapper
         /// </summary>
         /// <param name="UserAgent">your useragent per https://github.com/reddit/reddit/wiki/API#Rules </param>
-        public Reddit (string UserAgent) 
+        public Reddit(string UserAgent)
         {
             Connection.UserAgent = UserAgent;
         }
@@ -36,12 +36,12 @@ namespace Reddit
         /// <param name="UserName">user's username</param>
         /// <param name="Password">user's password</param>
         /// <returns>logged in successfully?</returns>
-        public Me Login (string UserName, string Password)
+        public Me Login(string UserName, string Password)
         {
             var Response = Connection.Post("api/login", "user=" + UserName + "&passwd=" + Password);
             SimpleJSON.JObject Json = SimpleJSON.JSONDecoder.Decode(Response);
             Connection.Cookie = (string)Json["json"]["data"]["cookie"];
-            Connection.ModHash = (string)Json["json"]["data"]["modhash"];  
+            Connection.ModHash = (string)Json["json"]["data"]["modhash"];
             return GetMe();
         }
 
@@ -49,12 +49,12 @@ namespace Reddit
         /// checks connection to see if logged in
         /// </summary>
         /// <returns>logged in to API?</returns>
-        public bool LoggedIn ()
+        public bool LoggedIn()
         {
             return Connection.LoggedIn();
         }
 
-        #endregion                
+        #endregion
 
         #region Me
 
@@ -62,7 +62,7 @@ namespace Reddit
         /// gets logged in user's info
         /// </summary>
         /// <returns>API.Me object</returns>
-        private Me GetMe ()
+        private Me GetMe()
         {
             if (!LoggedIn()) throw new NotLoggedInException("You need to be logged in to get your info");
             var Response = Connection.Get("api/me.json");
@@ -71,7 +71,7 @@ namespace Reddit
         }
 
         #endregion
-        
+
         #region Subreddit
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Reddit
         /// </summary>
         /// <param name="SubredditName">subreddit name</param>
         /// <returns>Subreddit wrapper object</returns>
-        public Subreddit r (string SubredditName)
+        public Subreddit r(string SubredditName)
         {
             string Response = Connection.Get("r/" + SubredditName + ".json");
             return Subreddit.Create(SubredditName, SimpleJSON.JSONDecoder.Decode(Response)["data"]);
@@ -94,7 +94,7 @@ namespace Reddit
         /// </summary>
         /// <param name="UserName">user's username</param>
         /// <returns>User wrapper object</returns>
-        public User GetUser (string UserName)
+        public User GetUser(string UserName)
         {
             string Response = Connection.Get("user/" + UserName + "/about.json");
             return User.Create(SimpleJSON.JSONDecoder.Decode(Response)["data"]);

@@ -1,12 +1,12 @@
-﻿using Xunit;
-using Reddit.Things;
+﻿using Reddit.Things;
+using Xunit;
 
 namespace Reddit.Tests.Things
 {
     public class KindTests
     {
         [Fact]
-        public void GetTest ()
+        public void GetTest()
         {
             string comment = "t3";
             var expectedKind = Kind.Link;

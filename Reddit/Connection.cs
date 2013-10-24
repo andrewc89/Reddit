@@ -1,7 +1,7 @@
-﻿using System.Text;
-using System.Net;
+﻿using Reddit.Exceptions;
 using System.IO;
-using Reddit.Exceptions;
+using System.Net;
+using System.Text;
 
 namespace Reddit
 {
@@ -22,7 +22,7 @@ namespace Reddit
 
         #region Logged in?
 
-        internal static bool LoggedIn ()
+        internal static bool LoggedIn()
         {
             return !string.IsNullOrEmpty(Cookie) && !string.IsNullOrEmpty(ModHash);
         }
@@ -31,7 +31,7 @@ namespace Reddit
 
         #region Get
 
-        internal static string Get (string Url, string Args = "")
+        internal static string Get(string Url, string Args = "")
         {
             if (!CheckProperties()) throw new NotLoggedInException("you need to: var r = new Reddit(myUserAgent); r.Login(Username, Password);");
             if (!string.IsNullOrEmpty(Args))
@@ -54,7 +54,7 @@ namespace Reddit
 
         #region Post
 
-        internal static string Post (string Url, string Post)
+        internal static string Post(string Url, string Post)
         {
             if (!Url.Equals("api/login") && !CheckProperties()) throw new NotLoggedInException("you need to: var r = new Reddit(myUserAgent); r.Login(Username, Password);");
             var Request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/" + Url);
@@ -93,7 +93,7 @@ namespace Reddit
 
         #region CheckProperties
 
-        private static bool CheckProperties ()
+        private static bool CheckProperties()
         {
             return !(string.IsNullOrEmpty(UserAgent) && string.IsNullOrEmpty(Cookie) && string.IsNullOrEmpty(ModHash));
         }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Reddit.Things.API;
+﻿using Reddit.Things.API;
+using System;
 
 namespace Reddit.Tests
 {
@@ -15,12 +12,12 @@ namespace Reddit.Tests
         public static string UserAgent = "testing https://github.com/theyshookhands/Reddit";
         public static string UserName = "testjswrapper";
         public static string Password = "testjswrapper";
-        public static string UserID = "9nfm5";        
+        public static string UserID = "9nfm5";
         public static string SubredditID = "2vo7n";
         public static string LinkID = "1p4z0s";
         public static string RandomUrl = "http://example.com/test?datetime=" + DateTime.Now.ToString("o");
 
-        public static Reddit GetReddit ()
+        public static Reddit GetReddit()
         {
             if (reddit == null)
             {
@@ -30,7 +27,7 @@ namespace Reddit.Tests
             return reddit;
         }
 
-        public static Subreddit GetSubreddit ()
+        public static Subreddit GetSubreddit()
         {
             if (subreddit == null)
             {
@@ -39,7 +36,7 @@ namespace Reddit.Tests
             return subreddit;
         }
 
-        public static Link GetLink ()
+        public static Link GetLink()
         {
             if (link == null)
             {

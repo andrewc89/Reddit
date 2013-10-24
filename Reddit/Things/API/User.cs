@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Reddit.Extensions;
+﻿using Reddit.Extensions;
 using Reddit.Things.API.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace Reddit.Things.API
 {
@@ -13,16 +13,27 @@ namespace Reddit.Things.API
         #region Properties
 
         public bool HasMail { get; set; }
+
         public string Name { get; set; }
+
         public bool IsFriend { get; set; }
+
         public DateTime Created { get; set; }
+
         public DateTime CreatedUTC { get; set; }
+
         public int LinkKarma { get; set; }
+
         public int CommentKarma { get; set; }
+
         public bool IsGold { get; set; }
+
         public bool IsMod { get; set; }
+
         public bool HasModMail { get; set; }
+
         private List<Comment> _Comments;
+
         public List<Comment> Comments
         {
             get
@@ -40,7 +51,7 @@ namespace Reddit.Things.API
         #region Public Functions
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Sort">one of: SortBy.Hot, SortBy.New, SortBy.Top, SortBy.Controversial</param>
         /// <param name="From">one of: From.ThisHour, From.Today, From.ThisWeek, From.ThisMonth, From.ThisYear, From.Forever</param>
@@ -72,7 +83,7 @@ namespace Reddit.Things.API
 
         #region Factories
 
-        internal static User Create (SimpleJSON.JObject Json)
+        internal static User Create(SimpleJSON.JObject Json)
         {
             var Temp = new User();
 
@@ -92,12 +103,12 @@ namespace Reddit.Things.API
             return Temp;
         }
 
-        internal static User ByID (string Input)
+        internal static User ByID(string Input)
         {
             throw new NotImplementedException();
         }
 
-        internal static User ByUrl (string Input)
+        internal static User ByUrl(string Input)
         {
             return Create(SimpleJSON.JSONDecoder.Decode(Input)["data"]);
         }

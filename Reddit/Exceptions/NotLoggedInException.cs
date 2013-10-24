@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Reddit.Exceptions
 {
-    class NotLoggedInException : Exception
+    internal class NotLoggedInException : Exception
     {
         public NotLoggedInException()
         {

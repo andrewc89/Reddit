@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Reddit.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Reddit.Exceptions;
 
 namespace Reddit.Things.API
 {
@@ -12,7 +12,7 @@ namespace Reddit.Things.API
     {
         #region Constructor
 
-        public Subreddit ()
+        public Subreddit()
         {
             Links = new List<Link>();
         }
@@ -22,11 +22,17 @@ namespace Reddit.Things.API
         #region Properties
 
         public string Name { get; set; }
+
         public string ModHash { get; set; }
+
         public List<Link> Links { get; set; }
+
         public Thing Before { get; set; }
+
         public Thing After { get; set; }
+
         private Meta.SubredditMetaData _MetaData;
+
         public Meta.SubredditMetaData MetaData
         {
             get
@@ -44,7 +50,7 @@ namespace Reddit.Things.API
 
         #region Submit
 
-        public Thing PostSelf (string Title, string ContentMarkdown)
+        public Thing PostSelf(string Title, string ContentMarkdown)
         {
             string PostData = new StringBuilder()
                 .Append("title=").Append(Title)
@@ -55,7 +61,7 @@ namespace Reddit.Things.API
             return Post(PostData);
         }
 
-        public Thing PostLink (string Title, string Url)
+        public Thing PostLink(string Title, string Url)
         {
             string PostData = new StringBuilder()
                 .Append("title=").Append(Title)
@@ -66,7 +72,7 @@ namespace Reddit.Things.API
             return Post(PostData);
         }
 
-        private Thing Post (string PostData)
+        private Thing Post(string PostData)
         {
             string Response = Connection.Post("api/submit", PostData);
             try
@@ -77,19 +83,19 @@ namespace Reddit.Things.API
             catch (KeyNotFoundException e)
             {
                 throw new NotEnoughKarmaException("Your account needs more karma to avoid captchas when posting. See here: http://stackoverflow.com/a/11408092/1299363");
-            }            
+            }
         }
 
         #endregion
 
         #region Listings
 
-        public List<Link> Hot (int Limit = 50)
+        public List<Link> Hot(int Limit = 50)
         {
             return Links.GetRange(0, Limit);
         }
 
-        public List<Link> New (Enums.Sort Sort = null, int Limit = 50)
+        public List<Link> New(Enums.Sort Sort = null, int Limit = 50)
         {
             if (Sort == null)
             {
@@ -100,12 +106,12 @@ namespace Reddit.Things.API
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="From">one of: Today, ThisHour, ThisWeek, ThisMonth, ThisYear</param>
         /// <param name="Limit"></param>
         /// <returns></returns>
-        public List<Link> Top (Enums.From From = null, int Limit = 50)
+        public List<Link> Top(Enums.From From = null, int Limit = 50)
         {
             if (From == null)
             {
@@ -119,7 +125,7 @@ namespace Reddit.Things.API
             return Sorted("top", Args);
         }
 
-        public List<Link> Controversial (Enums.From From = null, int Limit = 50)
+        public List<Link> Controversial(Enums.From From = null, int Limit = 50)
         {
             if (From == null)
             {
@@ -133,7 +139,7 @@ namespace Reddit.Things.API
             return Sorted("controversial", Args);
         }
 
-        private List<Link> Sorted (string Sort, string Args)
+        private List<Link> Sorted(string Sort, string Args)
         {
             string Response = Connection.Get("r/" + Name + "/" + Sort + "/.json", Args);
             var Links = new List<Link>();
@@ -148,12 +154,12 @@ namespace Reddit.Things.API
 
         #region Factory
 
-        internal static Subreddit Create (string Name, SimpleJSON.JObject Json)
+        internal static Subreddit Create(string Name, SimpleJSON.JObject Json)
         {
             var Temp = new Subreddit();
             Temp.Name = Name;
 
-            var Children = Json["children"];            
+            var Children = Json["children"];
             Temp.Kind = Kind.Subreddit;
             if (Children.ArrayValue.Count > 0)
             {
